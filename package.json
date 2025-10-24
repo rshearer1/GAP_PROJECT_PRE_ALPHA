@@ -1,0 +1,37 @@
+{
+  "name": "grow-a-planet",
+  "version": "0.5.0",
+  "description": "A Roblox planet growing and nurturing game built with roblox-ts",
+  "main": "out/init.lua",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w",
+    "dev": "concurrently \"npm run watch\" \"rojo serve\"",
+    "lint": "eslint src --ext .ts,.tsx",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "keywords": [
+    "roblox",
+    "roblox-ts",
+    "game",
+    "planet",
+    "simulation"
+  ],
+  "author": "Robert Shearer",
+  "license": "MIT",
+  "devDependencies": {
+    "@rbxts/types": "^1.0.700",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "roblox-ts": "^2.2.0",
+    "typescript": "~5.3.0"
+  },
+  "dependencies": {
+    "@rbxts/services": "^1.5.1",
+    "@rbxts/t": "^3.1.1"
+  }
+}

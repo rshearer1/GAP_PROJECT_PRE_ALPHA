@@ -1,0 +1,64 @@
+{
+  "compilerOptions": {
+    // roblox-ts configuration
+    "outDir": "out",
+    "rootDir": "src",
+    "module": "commonjs",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    
+    // Type checking
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    // Module resolution
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    // Advanced
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    
+    // Target
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "jsx": "react",
+    "jsxFactory": "Roact.createElement",
+    "jsxFragmentFactory": "Roact.Fragment",
+    
+    // Type roots
+    "typeRoots": [
+      "node_modules/@rbxts"
+    ],
+    
+    // Path mapping
+    "baseUrl": "src",
+    "paths": {
+      "shared/*": ["shared/*"]
+    },
+    
+    // Experimental
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "out",
+    "**/*.spec.ts"
+  ]
+}
