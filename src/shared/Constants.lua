@@ -100,6 +100,50 @@ Constants.PETS = {
 Constants.UI = {
     UPDATE_INTERVAL = 0.5,      -- Update UI every 0.5 seconds
     NOTIFICATION_DURATION = 3,  -- Notifications last 3 seconds
+    
+    -- Planet UI Frame Settings
+    PLANET_UI = {
+        MAIN_FRAME_SIZE = UDim2.new(0, 220, 0, 280),
+        MAIN_FRAME_SIZE_MINIMIZED = UDim2.new(0, 220, 0, 40),
+        MAIN_FRAME_POSITION = UDim2.new(0, 10, 0, 10),
+        MAIN_FRAME_BG_COLOR = Color3.fromRGB(30, 30, 40),
+        MAIN_FRAME_TRANSPARENCY = 0.1,
+        
+        CORNER_RADIUS = UDim.new(0, 8),
+        PADDING = UDim.new(0, 10),
+        
+        MINIMIZE_BTN_SIZE = UDim2.new(0, 25, 0, 25),
+        MINIMIZE_BTN_POS = UDim2.new(1, -30, 0, 5),
+        MINIMIZE_BTN_COLOR = Color3.fromRGB(52, 73, 94),
+        
+        TITLE_SIZE = UDim2.new(1, -35, 0, 30),
+        TITLE_TEXT_SIZE = 18,
+        TITLE_TEXT = "My Planet",
+        
+        INFO_FRAME_SIZE = UDim2.new(1, 0, 0, 60),
+        INFO_FRAME_COLOR = Color3.fromRGB(40, 40, 50),
+        
+        RESOURCES_FRAME_SIZE = UDim2.new(1, 0, 0, 120),
+        RESOURCES_FRAME_POS = UDim2.new(0, 0, 0, 70),
+        
+        XP_BUTTON_SIZE = UDim2.new(1, 0, 0, 35),
+        XP_BUTTON_POS = UDim2.new(0, 0, 0, 200),
+        XP_BUTTON_COLOR = Color3.fromRGB(100, 100, 200),
+        XP_BUTTON_TEXT = "⭐ Gain XP",
+        
+        -- Resource Colors
+        WATER_COLOR = Color3.fromRGB(100, 150, 255),
+        MINERAL_COLOR = Color3.fromRGB(150, 150, 150),
+        ENERGY_COLOR = Color3.fromRGB(255, 200, 100),
+        BIOMASS_COLOR = Color3.fromRGB(100, 200, 100),
+        
+        -- Text Sizes
+        LEVEL_TEXT_SIZE = 18,
+        BIOME_TEXT_SIZE = 12,
+        XP_TEXT_SIZE = 10,
+        RESOURCE_TEXT_SIZE = 13,
+        BUTTON_TEXT_SIZE = 14,
+    },
 }
 
 return Constants

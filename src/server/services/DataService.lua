@@ -7,11 +7,20 @@
     - Loading player data on join
     - Auto-save system
     - Data validation and migration
+    
+    GAP Compliance:
+    - Uses Janitor for cleanup
+    - References Constants for configuration
+    - JSDoc comments on all public methods
 ]]
 
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+local Janitor = require(game:GetService("ReplicatedStorage").Packages.Janitor)
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Constants = require(ReplicatedStorage.Shared.Constants)
 
 local DataService = Knit.CreateService {
     Name = "DataService",
@@ -22,11 +31,16 @@ local DataService = Knit.CreateService {
     -- Cache player data in memory
     _playerData = {},
     
-    -- Auto-save interval (seconds)
-    _autoSaveInterval = 60,
+    -- Janitor for cleanup
+    _janitor = Janitor.new(),
 }
 
 -- Default player data template
+---
+-- Get default player data structure
+-- @param userId number - The user ID
+-- @return table - Default player data template
+--
 local function getDefaultData(userId: number)
     return {
         userId = userId,
@@ -64,6 +78,10 @@ local function getDefaultData(userId: number)
     }
 end
 
+---
+-- Initialize DataService
+-- Connects to DataStore or warns if unavailable
+--
 function DataService:KnitInit()
     print("[DataService] Initializing...")
     
@@ -81,16 +99,21 @@ function DataService:KnitInit()
     end
 end
 
+---
+-- Start DataService
+-- Begins auto-save loop and binds to game close event
+-- Uses Constants.GAMEPLAY.AUTO_SAVE_INTERVAL for timing
+--
 function DataService:KnitStart()
     print("[DataService] Starting...")
     
-    -- Auto-save loop
-    task.spawn(function()
+    -- Auto-save loop (managed by Janitor)
+    self._janitor:Add(task.spawn(function()
         while true do
-            task.wait(self._autoSaveInterval)
+            task.wait(Constants.GAMEPLAY.AUTO_SAVE_INTERVAL)
             self:SaveAllPlayers()
         end
-    end)
+    end), "task.cancel")
     
     -- Save all players on game shutdown
     game:BindToClose(function()
@@ -99,7 +122,17 @@ function DataService:KnitStart()
         task.wait(3) -- Give time for saves to complete
     end)
     
-    print("[DataService] Started! Auto-save interval:", self._autoSaveInterval, "seconds")
+    print("[DataService] Started! Auto-save interval:", Constants.GAMEPLAY.AUTO_SAVE_INTERVAL, "seconds")
+end
+
+---
+-- Load player data from DataStore or return defaults
+-- Merges saved data with default structure to handle new fields
+-- @param player Player - The player to load data for
+-- @return table - The loaded or default player data
+--
+-- Load player data
+function DataService:LoadPlayerData(player: Player)
 end
 
 -- Load player data
@@ -139,6 +172,12 @@ function DataService:LoadPlayerData(player: Player)
     end
 end
 
+---
+-- Save player data to DataStore
+-- Updates play time statistics before saving
+-- @param player Player - The player to save data for
+-- @return boolean - True if save succeeded, false otherwise
+--
 -- Save player data
 function DataService:SavePlayerData(player: Player)
     local userId = player.UserId
@@ -174,6 +213,11 @@ function DataService:SavePlayerData(player: Player)
     end
 end
 
+---
+-- Save all active players' data
+-- Called by auto-save loop and on game shutdown
+-- @return number - Count of successfully saved players
+--
 -- Save all players
 function DataService:SaveAllPlayers()
     print("[DataService] Auto-saving all players...")
@@ -191,11 +235,22 @@ function DataService:SaveAllPlayers()
     print("[DataService] Auto-save complete. Saved", count, "players")
 end
 
+---
+-- Get player data from cache
+-- @param userId number - The user ID
+-- @return table? - The cached player data or nil
+--
 -- Get player data from cache
 function DataService:GetPlayerData(userId: number)
     return self._playerData[userId]
 end
 
+---
+-- Update player data in cache
+-- @param userId number - The user ID
+-- @param dataUpdates table - Key-value pairs to update
+-- @return boolean - True if update succeeded, false if player not loaded
+--
 -- Update player data in cache
 function DataService:UpdatePlayerData(userId: number, dataUpdates)
     if not self._playerData[userId] then
@@ -210,6 +265,10 @@ function DataService:UpdatePlayerData(userId: number, dataUpdates)
     return true
 end
 
+---
+-- Remove player data from cache when they leave
+-- @param userId number - The user ID to unload
+--
 -- Remove player from cache (when they leave)
 function DataService:UnloadPlayerData(userId: number)
     self._playerData[userId] = nil

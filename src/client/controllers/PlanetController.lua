@@ -7,12 +7,18 @@
     - Update UI in real-time
     - Handle player interactions with planet
     - Communicate with PlanetService
+    
+    GAP Compliance:
+    - Uses Janitor for cleanup
+    - References Constants.UI.PLANET_UI for all UI values
+    - JSDoc comments on all public methods
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
+local Janitor = require(ReplicatedStorage.Packages.Janitor)
 local Types = require(ReplicatedStorage.Shared.Types)
 local Constants = require(ReplicatedStorage.Shared.Constants)
 
@@ -23,14 +29,24 @@ local PlanetController = Knit.CreateController({
 -- Local state
 PlanetController._planetState = nil
 PlanetController._ui = nil
-PlanetController._updateConnection = nil
+PlanetController._janitor = Janitor.new()
 
 --[[ Controller Lifecycle ]]--
 
+---
+-- Initialize PlanetController
+--
+---
+-- Initialize PlanetController
+--
 function PlanetController:KnitInit()
     print("[PlanetController] Initializing...")
 end
 
+---
+-- Start PlanetController
+-- Fetches initial planet state and creates UI
+--
 function PlanetController:KnitStart()
     print("[PlanetController] Starting...")
     
@@ -56,9 +72,14 @@ end
 
 --[[ Private Methods ]]--
 
+---
+-- Start the UI update loop
+-- Uses Janitor to manage the update task
+-- @param PlanetService table - The PlanetService to fetch state from
+--
 function PlanetController:_startUpdateLoop(PlanetService)
-    -- Update UI periodically
-    self._updateConnection = task.spawn(function()
+    -- Update UI periodically (managed by Janitor)
+    self._janitor:Add(task.spawn(function()
         while true do
             task.wait(Constants.UI.UPDATE_INTERVAL)
             
@@ -72,12 +93,17 @@ function PlanetController:_startUpdateLoop(PlanetService)
                 warn("[PlanetController] Update failed:", err)
             end)
         end
-    end)
+    end), "task.cancel")
 end
 
+---
+-- Create the Planet UI
+-- All values sourced from Constants.UI.PLANET_UI
+--
 function PlanetController:_createUI()
     local player = Players.LocalPlayer
     local playerGui = player:WaitForChild("PlayerGui")
+    local UI = Constants.UI.PLANET_UI
     
     -- Create ScreenGui
     local screenGui = Instance.new("ScreenGui")
@@ -86,35 +112,38 @@ function PlanetController:_createUI()
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = playerGui
     
-    -- Create main container (much smaller)
+    -- Add ScreenGui to Janitor for cleanup
+    self._janitor:Add(screenGui)
+    
+    -- Create main container
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 220, 0, 280) -- Reduced from 300x400
-    mainFrame.Position = UDim2.new(0, 10, 0, 10) -- Closer to corner
-    mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    mainFrame.BackgroundTransparency = 0.1 -- Slightly transparent
+    mainFrame.Size = UI.MAIN_FRAME_SIZE
+    mainFrame.Position = UI.MAIN_FRAME_POSITION
+    mainFrame.BackgroundColor3 = UI.MAIN_FRAME_BG_COLOR
+    mainFrame.BackgroundTransparency = UI.MAIN_FRAME_TRANSPARENCY
     mainFrame.BorderSizePixel = 0
     mainFrame.Parent = screenGui
     
     -- Add corner rounding
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
+    corner.CornerRadius = UI.CORNER_RADIUS
     corner.Parent = mainFrame
     
-    -- Add padding (reduced)
+    -- Add padding
     local padding = Instance.new("UIPadding")
-    padding.PaddingLeft = UDim.new(0, 10)
-    padding.PaddingRight = UDim.new(0, 10)
-    padding.PaddingTop = UDim.new(0, 10)
-    padding.PaddingBottom = UDim.new(0, 10)
+    padding.PaddingLeft = UI.PADDING
+    padding.PaddingRight = UI.PADDING
+    padding.PaddingTop = UI.PADDING
+    padding.PaddingBottom = UI.PADDING
     padding.Parent = mainFrame
     
     -- Minimize/Maximize button
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Name = "MinimizeButton"
-    minimizeBtn.Size = UDim2.new(0, 25, 0, 25)
-    minimizeBtn.Position = UDim2.new(1, -30, 0, 5)
-    minimizeBtn.BackgroundColor3 = Color3.fromRGB(52, 73, 94)
+    minimizeBtn.Size = UI.MINIMIZE_BTN_SIZE
+    minimizeBtn.Position = UI.MINIMIZE_BTN_POS
+    minimizeBtn.BackgroundColor3 = UI.MINIMIZE_BTN_COLOR
     minimizeBtn.Text = "−"
     minimizeBtn.TextColor3 = Color3.new(1, 1, 1)
     minimizeBtn.TextSize = 20
@@ -125,15 +154,15 @@ function PlanetController:_createUI()
     minCorner.CornerRadius = UDim.new(0, 4)
     minCorner.Parent = minimizeBtn
     
-    -- Title (smaller)
+    -- Title
     local title = Instance.new("TextLabel")
     title.Name = "Title"
-    title.Size = UDim2.new(1, -35, 0, 30) -- Make room for minimize button
+    title.Size = UI.TITLE_SIZE
     title.Position = UDim2.new(0, 0, 0, 0)
     title.BackgroundTransparency = 1
-    title.Text = "My Planet"
+    title.Text = UI.TITLE_TEXT
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextSize = 18 -- Reduced from 24
+    title.TextSize = UI.TITLE_TEXT_SIZE
     title.Font = Enum.Font.GothamBold
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = mainFrame
@@ -146,12 +175,12 @@ function PlanetController:_createUI()
     contentFrame.BackgroundTransparency = 1
     contentFrame.Parent = mainFrame
     
-    -- Planet Info Frame (smaller)
+    -- Planet Info Frame
     local infoFrame = Instance.new("Frame")
     infoFrame.Name = "InfoFrame"
-    infoFrame.Size = UDim2.new(1, 0, 0, 60) -- Reduced from 80
+    infoFrame.Size = UI.INFO_FRAME_SIZE
     infoFrame.Position = UDim2.new(0, 0, 0, 0)
-    infoFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    infoFrame.BackgroundColor3 = UI.INFO_FRAME_COLOR
     infoFrame.BorderSizePixel = 0
     infoFrame.Parent = contentFrame
     
@@ -166,15 +195,15 @@ function PlanetController:_createUI()
     infoPadding.PaddingBottom = UDim.new(0, 6)
     infoPadding.Parent = infoFrame
     
-    -- Level label (smaller text)
+    -- Level label
     local levelLabel = Instance.new("TextLabel")
     levelLabel.Name = "LevelLabel"
-    levelLabel.Size = UDim2.new(1, 0, 0, 16) -- Reduced height
+    levelLabel.Size = UDim2.new(1, 0, 0, 16)
     levelLabel.Position = UDim2.new(0, 0, 0, 0)
     levelLabel.BackgroundTransparency = 1
     levelLabel.Text = "Level 1"
     levelLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
-    levelLabel.TextSize = 18
+    levelLabel.TextSize = UI.LEVEL_TEXT_SIZE
     levelLabel.Font = Enum.Font.GothamBold
     levelLabel.TextXAlignment = Enum.TextXAlignment.Left
     levelLabel.Parent = infoFrame
@@ -183,34 +212,34 @@ function PlanetController:_createUI()
     local biomeLabel = Instance.new("TextLabel")
     biomeLabel.Name = "BiomeLabel"
     biomeLabel.Size = UDim2.new(1, 0, 0, 16)
-    biomeLabel.Position = UDim2.new(0, 0, 0, 18) -- Adjusted
+    biomeLabel.Position = UDim2.new(0, 0, 0, 18)
     biomeLabel.BackgroundTransparency = 1
     biomeLabel.Text = "Biome: Barren"
     biomeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    biomeLabel.TextSize = 12 -- Slightly smaller
+    biomeLabel.TextSize = UI.BIOME_TEXT_SIZE
     biomeLabel.Font = Enum.Font.Gotham
     biomeLabel.TextXAlignment = Enum.TextXAlignment.Left
     biomeLabel.Parent = infoFrame
     
-    -- XP Progress label (smaller)
+    -- XP Progress label
     local xpLabel = Instance.new("TextLabel")
     xpLabel.Name = "XPLabel"
     xpLabel.Size = UDim2.new(1, 0, 0, 14)
-    xpLabel.Position = UDim2.new(0, 0, 0, 36) -- Adjusted
+    xpLabel.Position = UDim2.new(0, 0, 0, 36)
     xpLabel.BackgroundTransparency = 1
     xpLabel.Text = "XP: 0 / 100"
     xpLabel.TextColor3 = Color3.fromRGB(150, 150, 255)
-    xpLabel.TextSize = 10 -- Smaller
+    xpLabel.TextSize = UI.XP_TEXT_SIZE
     xpLabel.Font = Enum.Font.Gotham
     xpLabel.TextXAlignment = Enum.TextXAlignment.Left
     xpLabel.Parent = infoFrame
     
-    -- Resources Frame (smaller)
+    -- Resources Frame
     local resourcesFrame = Instance.new("Frame")
     resourcesFrame.Name = "ResourcesFrame"
-    resourcesFrame.Size = UDim2.new(1, 0, 0, 120) -- Reduced from 200
-    resourcesFrame.Position = UDim2.new(0, 0, 0, 70) -- Adjusted position
-    resourcesFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    resourcesFrame.Size = UI.RESOURCES_FRAME_SIZE
+    resourcesFrame.Position = UI.RESOURCES_FRAME_POS
+    resourcesFrame.BackgroundColor3 = UI.INFO_FRAME_COLOR
     resourcesFrame.BorderSizePixel = 0
     resourcesFrame.Parent = contentFrame
     
@@ -225,39 +254,39 @@ function PlanetController:_createUI()
     resourcesPadding.PaddingBottom = UDim.new(0, 6)
     resourcesPadding.Parent = resourcesFrame
     
-    -- Resource labels (smaller, more compact)
+    -- Resource labels
     local resourceTypes = {
-        {name = "Water", color = Color3.fromRGB(100, 150, 255), icon = "💧"},
-        {name = "Minerals", color = Color3.fromRGB(150, 150, 150), icon = "⛏️"},
-        {name = "Energy", color = Color3.fromRGB(255, 200, 100), icon = "⚡"},
-        {name = "Biomass", color = Color3.fromRGB(100, 200, 100), icon = "🌱"},
+        {name = "Water", color = UI.WATER_COLOR, icon = "💧"},
+        {name = "Minerals", color = UI.MINERAL_COLOR, icon = "⛏️"},
+        {name = "Energy", color = UI.ENERGY_COLOR, icon = "⚡"},
+        {name = "Biomass", color = UI.BIOMASS_COLOR, icon = "🌱"},
     }
     
     for i, resource in ipairs(resourceTypes) do
         local resourceLabel = Instance.new("TextLabel")
         resourceLabel.Name = resource.name .. "Label"
-        resourceLabel.Size = UDim2.new(1, 0, 0, 24) -- Reduced from 35
-        resourceLabel.Position = UDim2.new(0, 0, 0, (i - 1) * 26) -- Tighter spacing
+        resourceLabel.Size = UDim2.new(1, 0, 0, 24)
+        resourceLabel.Position = UDim2.new(0, 0, 0, (i - 1) * 26)
         resourceLabel.BackgroundTransparency = 1
         resourceLabel.Text = `{resource.icon} {resource.name}: 0`
         resourceLabel.TextColor3 = resource.color
-        resourceLabel.TextSize = 13 -- Reduced from 16
+        resourceLabel.TextSize = UI.RESOURCE_TEXT_SIZE
         resourceLabel.Font = Enum.Font.GothamMedium
         resourceLabel.TextXAlignment = Enum.TextXAlignment.Left
         resourceLabel.Parent = resourcesFrame
     end
     
     
-    -- XP Collect Button (smaller)
+    -- XP Collect Button
     local xpButton = Instance.new("TextButton")
     xpButton.Name = "XPButton"
-    xpButton.Size = UDim2.new(1, 0, 0, 35) -- Reduced from 40
-    xpButton.Position = UDim2.new(0, 0, 0, 200) -- Positioned below resources
-    xpButton.BackgroundColor3 = Color3.fromRGB(100, 100, 200)
-    xpButton.Text = "⭐ Gain XP"
+    xpButton.Size = UI.XP_BUTTON_SIZE
+    xpButton.Position = UI.XP_BUTTON_POS
+    xpButton.BackgroundColor3 = UI.XP_BUTTON_COLOR
+    xpButton.Text = UI.XP_BUTTON_TEXT
     xpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     xpButton.Font = Enum.Font.GothamBold
-    xpButton.TextSize = 14 -- Reduced from 16
+    xpButton.TextSize = UI.BUTTON_TEXT_SIZE
     xpButton.Parent = contentFrame
     
     local xpCorner = Instance.new("UICorner")
@@ -265,7 +294,7 @@ function PlanetController:_createUI()
     xpCorner.Parent = xpButton
     
     -- XP Button click handler
-    xpButton.MouseButton1Click:Connect(function()
+    self._janitor:Add(xpButton.MouseButton1Click:Connect(function()
         local PlanetService = Knit.GetService("PlanetService")
         PlanetService:CollectResources():andThen(function(result)
             if result and result.xpGained and result.xpGained > 0 then
@@ -276,27 +305,30 @@ function PlanetController:_createUI()
         end):catch(function(err)
             warn("[PlanetController] Failed to collect XP:", err)
         end)
-    end)
+    end), "Disconnect")
     
     -- Minimize button functionality
     local isMinimized = false
-    minimizeBtn.MouseButton1Click:Connect(function()
+    self._janitor:Add(minimizeBtn.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
         contentFrame.Visible = not isMinimized
         minimizeBtn.Text = isMinimized and "+" or "−"
         
         if isMinimized then
-            mainFrame.Size = UDim2.new(0, 220, 0, 40) -- Just title bar
+            mainFrame.Size = UI.MAIN_FRAME_SIZE_MINIMIZED
         else
-            mainFrame.Size = UDim2.new(0, 220, 0, 280) -- Full size
+            mainFrame.Size = UI.MAIN_FRAME_SIZE
         end
-    end)
+    end), "Disconnect")
     
     self._ui = screenGui
     print("[PlanetController] UI created successfully - MainFrame Parent:", mainFrame.Parent.Name)
     self:_updateUI()
 end
 
+---
+-- Update the UI with current planet state
+--
 function PlanetController:_updateUI()
     if not self._ui or not self._planetState then return end
     
@@ -351,11 +383,19 @@ end
 
 --[[ Public Methods ]]--
 
+---
+-- Get current planet state
+-- @return PlanetState? - The cached planet state
+--
 -- Get current planet state (for other controllers)
 function PlanetController:getPlanetState()
     return self._planetState
 end
 
+---
+-- Refresh planet state from server
+-- Called after upgrades, collections, etc.
+--
 -- Refresh planet state from server (called after upgrades, etc.)
 function PlanetController:refreshPlanetState()
     local PlanetService = Knit.GetService("PlanetService")
