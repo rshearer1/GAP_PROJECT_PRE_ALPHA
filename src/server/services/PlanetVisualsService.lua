@@ -45,13 +45,13 @@ end
 function PlanetVisualsService:KnitStart()
     print("[PlanetVisualsService] Starting...")
     
-    -- Get PlanetService and PlotService
+    -- Get PlanetService and SpaceArenaService
     self._planetService = Knit.GetService("PlanetService")
-    self._plotService = Knit.GetService("PlotService")
+    self._spaceArenaService = Knit.GetService("SpaceArenaService")
     
     -- Handle player joining
     Players.PlayerAdded:Connect(function(player)
-        task.wait(1) -- Wait for planet data and plot to be created
+        task.wait(2) -- Wait for planet data and station to be assigned
         self:_createPlanetVisual(player)
     end)
     
@@ -77,19 +77,20 @@ function PlanetVisualsService:_createPlanetVisual(player: Player)
     
     print(`[PlanetVisualsService] Creating planet for {player.Name}`)
     
-    -- Get position from plot system
-    local position = Vector3.new(0, 20, 0) -- Default position
+    -- Get position from space station
+    local position = Vector3.new(0, 520, 0) -- Default position at space station height
     
-    if self._plotService then
-        local plotPosition = self._plotService:GetPlotPosition(userId)
-        if plotPosition then
-            position = plotPosition + Vector3.new(0, 20, 0) -- Planet height above plot
-            print(`[PlanetVisualsService] Using plot position for {player.Name}`)
+    if self._spaceArenaService then
+        local stationData = self._spaceArenaService:GetPlayerStation(userId)
+        if stationData then
+            -- Place planet above the station platform
+            position = stationData.position + Vector3.new(0, 100, 0)
+            print(`[PlanetVisualsService] Using station position for {player.Name} at {position}`)
         else
-            warn(`[PlanetVisualsService] No plot position found for {player.Name}, using default`)
+            warn(`[PlanetVisualsService] No station assigned for {player.Name}, using default`)
         end
     else
-        warn("[PlanetVisualsService] PlotService not available")
+        warn("[PlanetVisualsService] SpaceArenaService not available")
     end
     
     -- Create planet model

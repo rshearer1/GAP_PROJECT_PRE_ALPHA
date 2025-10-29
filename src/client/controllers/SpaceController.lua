@@ -167,6 +167,7 @@ function SpaceController:_setupControls()
         if gameProcessed then return end
         
         if input.KeyCode == Enum.KeyCode.F then
+            print("[SpaceController] F key pressed - toggling ship")
             self:_toggleShip()
             return
         end
