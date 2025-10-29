@@ -79,7 +79,7 @@ end
 --
 function PlanetController:_startUpdateLoop(PlanetService)
     -- Update UI periodically (managed by Janitor)
-    self._janitor:Add(task.spawn(function()
+    local updateThread = task.spawn(function()
         while true do
             task.wait(Constants.UI.UPDATE_INTERVAL)
             
@@ -93,7 +93,11 @@ function PlanetController:_startUpdateLoop(PlanetService)
                 warn("[PlanetController] Update failed:", err)
             end)
         end
-    end), "task.cancel")
+    end)
+    
+    self._janitor:Add(function()
+        task.cancel(updateThread)
+    end, true)
 end
 
 ---
@@ -276,37 +280,6 @@ function PlanetController:_createUI()
         resourceLabel.Parent = resourcesFrame
     end
     
-    
-    -- XP Collect Button
-    local xpButton = Instance.new("TextButton")
-    xpButton.Name = "XPButton"
-    xpButton.Size = UI.XP_BUTTON_SIZE
-    xpButton.Position = UI.XP_BUTTON_POS
-    xpButton.BackgroundColor3 = UI.XP_BUTTON_COLOR
-    xpButton.Text = UI.XP_BUTTON_TEXT
-    xpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    xpButton.Font = Enum.Font.GothamBold
-    xpButton.TextSize = UI.BUTTON_TEXT_SIZE
-    xpButton.Parent = contentFrame
-    
-    local xpCorner = Instance.new("UICorner")
-    xpCorner.CornerRadius = UDim.new(0, 8)
-    xpCorner.Parent = xpButton
-    
-    -- XP Button click handler
-    self._janitor:Add(xpButton.MouseButton1Click:Connect(function()
-        local PlanetService = Knit.GetService("PlanetService")
-        PlanetService:CollectResources():andThen(function(result)
-            if result and result.xpGained and result.xpGained > 0 then
-                print(`[PlanetController] Gained {result.xpGained} XP!`)
-                -- Refresh planet state to see level changes
-                self:refreshPlanetState()
-            end
-        end):catch(function(err)
-            warn("[PlanetController] Failed to collect XP:", err)
-        end)
-    end), "Disconnect")
-    
     -- Minimize button functionality
     local isMinimized = false
     self._janitor:Add(minimizeBtn.MouseButton1Click:Connect(function()
@@ -335,8 +308,11 @@ function PlanetController:_updateUI()
     local mainFrame = self._ui:FindFirstChild("MainFrame")
     if not mainFrame then return end
     
+    local contentFrame = mainFrame:FindFirstChild("Content")
+    if not contentFrame then return end
+    
     -- Update planet info
-    local infoFrame = mainFrame:FindFirstChild("InfoFrame")
+    local infoFrame = contentFrame:FindFirstChild("InfoFrame")
     if infoFrame then
         local levelLabel = infoFrame:FindFirstChild("LevelLabel")
         if levelLabel then
@@ -357,7 +333,7 @@ function PlanetController:_updateUI()
     end
     
     -- Update resources
-    local resourcesFrame = mainFrame:FindFirstChild("ResourcesFrame")
+    local resourcesFrame = contentFrame:FindFirstChild("ResourcesFrame")
     if resourcesFrame then
         local waterLabel = resourcesFrame:FindFirstChild("WaterLabel")
         if waterLabel then

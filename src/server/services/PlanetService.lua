@@ -89,9 +89,12 @@ function PlanetService:KnitStart()
     end), "Disconnect")
     
     -- Start resource update loop (managed by Janitor)
-    self._janitor:Add(task.spawn(function()
+    local updateThread = task.spawn(function()
         self:_resourceUpdateLoop()
-    end), "task.cancel")
+    end)
+    self._janitor:Add(function()
+        task.cancel(updateThread)
+    end, true)
     
     print("[PlanetService] Started successfully!")
 end

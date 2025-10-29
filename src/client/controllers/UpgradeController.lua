@@ -50,16 +50,16 @@ function UpgradeController:_createShopUI()
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = playerGui
     
-    -- Toggle Button (top-right, smaller)
+    -- Toggle Button (top-right) - Standard TextButton
     local toggleButton = Instance.new("TextButton")
     toggleButton.Name = "ToggleButton"
-    toggleButton.Size = UDim2.new(0, 80, 0, 35) -- Reduced from 120x40
-    toggleButton.Position = UDim2.new(1, -90, 0, 10) -- Closer to corner
+    toggleButton.Size = UDim2.new(0, 80, 0, 35)
+    toggleButton.Position = UDim2.new(1, -90, 0, 10)
     toggleButton.BackgroundColor3 = Color3.fromRGB(60, 140, 60)
     toggleButton.Text = "🛒 Shop"
     toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     toggleButton.Font = Enum.Font.GothamBold
-    toggleButton.TextSize = 14 -- Reduced from 18
+    toggleButton.TextSize = 14
     toggleButton.Parent = screenGui
     
     local toggleCorner = Instance.new("UICorner")

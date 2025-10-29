@@ -58,23 +58,20 @@ function SolarSystemController:_createUI()
     self._mapGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     self._mapGui.Parent = playerGui
     
-    -- Map button (top-right, next to shop button, smaller)
-    local mapButton = Instance.new("TextButton")
-    mapButton.Name = "MapButton"
-    mapButton.Size = UDim2.new(0, 75, 0, 35) -- Reduced from 100x50
-    mapButton.Position = UDim2.new(1, -175, 0, 10) -- Adjusted position
-    mapButton.AnchorPoint = Vector2.new(0, 0)
-    mapButton.BackgroundColor3 = Color3.fromRGB(41, 128, 185)
-    mapButton.Text = "🗺️ Map"
-    mapButton.TextColor3 = Color3.new(1, 1, 1)
-    mapButton.TextSize = 14 -- Reduced from 20
-    mapButton.Font = Enum.Font.GothamBold
-    mapButton.Parent = self._mapGui
+    -- Map button (right side, vertical layout) - ImageButton
+    local Constants = require(game:GetService("ReplicatedStorage").Shared.Constants)
+    local navConfig = Constants.UI.PLANET_UI.NAV_BUTTONS
+    local buttonIndex = 1 -- Second button in vertical stack
     
-    -- Rounded corners
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = mapButton
+    local mapButton = Instance.new("ImageButton")
+    mapButton.Name = "MapButton"
+    mapButton.Size = navConfig.BUTTON_SIZE
+    mapButton.Position = UDim2.new(1, -(navConfig.RIGHT_OFFSET + navConfig.BUTTON_SIZE.X.Offset), 0, navConfig.START_Y + (buttonIndex * (navConfig.BUTTON_SIZE.Y.Offset + navConfig.BUTTON_SPACING)))
+    mapButton.AnchorPoint = Vector2.new(0, 0)
+    mapButton.BackgroundTransparency = 1
+    mapButton.Image = "rbxassetid://90313785520046"
+    mapButton.ScaleType = Enum.ScaleType.Fit
+    mapButton.Parent = self._mapGui
     
     -- Map panel (hidden by default)
     self._mapFrame = Instance.new("Frame")

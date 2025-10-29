@@ -2,10 +2,77 @@
 
 ## Technology Stack
 
-- **Language**: TypeScript (via roblox-ts)
-- **Compiler**: roblox-ts 2.x
+- **Language**: Lua (migrated from TypeScript for Knit compatibility)
+- **Framework**: Knit 1.7.0 (Service/Controller pattern)
 - **Sync Tool**: Rojo 7.x
+- **Package Manager**: Wally
 - **Runtime**: Roblox Luau
+
+## Architecture: Two-Layer Gameplay System
+
+### Layer Overview
+The game features a **two-layer architecture** that separates active gameplay from passive customization:
+
+**Space Layer (Active):**
+- Real-time combat and exploration
+- Ship controls and movement
+- Asteroid/alien destruction
+- Territory expansion
+- Resource collection
+- Physics-based gameplay
+
+**Planet Layer (Passive):**
+- UI-based customization
+- Biome placement
+- Visual appearance changes
+- Civilization monitoring
+- Idle resource generation
+- Camera/viewer mode
+
+### Data Flow Between Layers
+
+```lua
+-- Space Layer → Planet Layer
+Player destroys asteroid
+    ↓
+SpaceCombatService awards resources
+    ↓
+DataService stores: Planet Essence, Biome Energy, Fragments
+    ↓
+PlanetCustomizationService reads resources
+    ↓
+Player spends resources in Planet View
+    ↓
+PlanetVisualsService updates 3D planet appearance
+
+-- Planet Layer → Space Layer
+Player upgrades civilization
+    ↓
+Unlocks better ship stats
+    ↓
+SpaceExplorationService reads ship upgrades
+    ↓
+Player has better combat capabilities
+    ↓
+Can expand territory faster
+```
+
+### Camera State Management
+```lua
+-- Two distinct camera modes
+type CameraMode = "SpaceView" | "PlanetView"
+
+-- SpaceView: Third-person ship controls
+-- - Camera follows ship
+-- - CFrame relative to ship position
+-- - Mouse controls aim/direction
+
+-- PlanetView: Orbital camera around planet
+-- - Camera orbits planet at fixed distance
+-- - Mouse drag to rotate
+-- - Zoom controls distance
+-- - No ship controls active
+```
 
 ## Module Architecture
 
@@ -13,28 +80,189 @@
 ```
 src/
 ├── server/
-│   ├── init.server.ts       # Server entry point
-│   ├── PlanetManager.ts     # Planet state and persistence
-│   └── DataManager.ts       # DataStore management
+│   ├── init.server.lua           # Server entry point (loads all services)
+│   ├── services/
+│   │   ├── PlanetService.lua     # Planet state, resources, levels
+│   │   ├── PlanetVisualsService.lua  # 3D planet rendering
+│   │   ├── DataService.lua       # Data persistence
+│   │   ├── UpgradeService.lua    # Upgrade system
+│   │   ├── SpaceExplorationService.lua  # Territory, asteroids (NEW)
+│   │   ├── SpaceCombatService.lua       # Combat, destruction (NEW)
+│   │   ├── PlanetCustomizationService.lua  # Biome placement (NEW)
+│   │   ├── SolarSystemService.lua       # Multi-planet management
+│   │   └── RebirthService.lua    # Prestige system
 ├── client/
-│   ├── init.client.ts      # Client entry point
-│   └── ui/
-│       ├── PlanetUI.ts     # Main planet view
-│       ├── PetUI.ts        # Pet management interface
-│       └── ShopUI.ts       # Premium shop interface
-├── modules/
-│   ├── EcosystemModule.ts  # Animal/plant simulation
-│   ├── GrowthModule.ts     # Resource growth rules
-│   ├── PetModule.ts        # Pet system logic
-│   └── TradeModule.ts      # Trading system
+│   ├── init.client.lua          # Client entry point (loads all controllers)
+│   ├── controllers/
+│   │   ├── PlanetController.lua     # Main planet UI
+│   │   ├── UpgradeController.lua    # Upgrade shop
+│   │   ├── SpaceController.lua      # Ship controls, combat UI (NEW)
+│   │   ├── PlanetViewController.lua # Planet customization UI (NEW)
+│   │   ├── SolarSystemController.lua  # Solar system map
+│   │   └── RebirthController.lua    # Rebirth UI
 └── shared/
-    ├── types.ts            # Type definitions
-    └── constants.ts        # Shared configuration
+    ├── Constants.lua           # All configuration values
+    └── Types.lua              # Type definitions
 ```
 
 ## Module Contracts
 
-### PlanetManager
+### SpaceExplorationService (NEW)
+```lua
+--[[
+    SpaceExplorationService
+    Server-side management of space environment, territory, and asteroid spawning
+]]
+
+local SpaceExplorationService = Knit.CreateService {
+    Name = "SpaceExplorationService",
+    
+    Client = {
+        -- Get player's current territory radius
+        GetTerritory = function(self, player)
+            return self.Server:_getTerritory(player.UserId)
+        end,
+        
+        -- Expand territory by amount (called after asteroid destruction)
+        ExpandTerritory = function(self, player, amount)
+            return self.Server:_expandTerritory(player.UserId, amount)
+        end
+    }
+}
+
+---
+-- Get player's territory data
+-- @param userId number - Player's UserId
+-- @return table - {radius: number, maxRadius: number}
+--
+function SpaceExplorationService:_getTerritory(userId)
+    -- Implementation
+end
+
+---
+-- Expand player's territory
+-- @param userId number - Player's UserId  
+-- @param amount number - Studs to expand
+-- @return table - {success: boolean, newRadius: number}
+--
+function SpaceExplorationService:_expandTerritory(userId, amount)
+    -- Validate amount
+    -- Apply expansion
+    -- Update territory visualization
+    -- Return new radius
+end
+
+---
+-- Spawn asteroids within territory
+-- @param userId number - Player's UserId
+--
+function SpaceExplorationService:_spawnAsteroids(userId)
+    -- Get territory radius
+    -- Calculate spawn count based on radius
+    -- Spawn asteroids at random positions within sphere
+    -- Set respawn timers
+end
+```
+
+### SpaceCombatService (NEW)
+```lua
+--[[
+    SpaceCombatService
+    Server-side combat validation and resource awarding
+]]
+
+local SpaceCombatService = Knit.CreateService {
+    Name = "SpaceCombatService",
+    
+    Client = {
+        -- Report asteroid destruction
+        DestroyAsteroid = function(self, player, asteroidId)
+            return self.Server:_validateDestruction(player.UserId, asteroidId)
+        end,
+        
+        -- Report alien defeat
+        DestroyAlien = function(self, player, alienId)
+            return self.Server:_validateAlienDefeat(player.UserId, alienId)
+        end
+    }
+}
+
+---
+-- Validate and process asteroid destruction
+-- @param userId number - Player's UserId
+-- @param asteroidId string - Asteroid instance ID
+-- @return table - {success: boolean, rewards: table}
+--
+function SpaceCombatService:_validateDestruction(userId, asteroidId)
+    -- Validate asteroid exists
+    -- Validate player dealt damage
+    -- Calculate drops based on asteroid type
+    -- Award resources via DataService
+    -- Expand territory via SpaceExplorationService
+    -- Return reward details
+end
+```
+
+### PlanetCustomizationService (NEW)
+```lua
+--[[
+    PlanetCustomizationService
+    Server-side planet appearance and biome customization
+]]
+
+local PlanetCustomizationService = Knit.CreateService {
+    Name = "PlanetCustomizationService",
+    
+    Client = {
+        -- Place biome on planet
+        PlaceBiome = function(self, player, biomeType, slotIndex)
+            return self.Server:_placeBiome(player.UserId, biomeType, slotIndex)
+        end,
+        
+        -- Apply planet skin
+        ApplySkin = function(self, player, skinId)
+            return self.Server:_applySkin(player.UserId, skinId)
+        end,
+        
+        -- Get customization data
+        GetCustomization = function(self, player)
+            return self.Server:_getCustomization(player.UserId)
+        end
+    }
+}
+
+---
+-- Place a biome in specific slot
+-- @param userId number - Player's UserId
+-- @param biomeType BiomeType - Type of biome to place
+-- @param slotIndex number - Slot index (1-8)
+-- @return table - {success: boolean, error: string?}
+--
+function PlanetCustomizationService:_placeBiome(userId, biomeType, slotIndex)
+    -- Validate player has biome fragment
+    -- Validate player has enough resources
+    -- Validate slot is unlocked
+    -- Consume resources
+    -- Update planet state
+    -- Trigger visual update via PlanetVisualsService
+    -- Return result
+end
+
+---
+-- Apply planet skin
+-- @param userId number - Player's UserId
+-- @param skinId string - Skin identifier
+-- @return table - {success: boolean, error: string?}
+--
+function PlanetCustomizationService:_applySkin(userId, skinId)
+    -- Validate player owns skin
+    -- Apply skin to planet visuals
+    -- Update planet appearance
+    -- Return result
+end
+```
+
+### PlanetManager (Existing - Updated)
 ```typescript
 /**
  * @class PlanetManager

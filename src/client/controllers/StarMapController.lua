@@ -64,21 +64,20 @@ function StarMapController:_createUI()
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = self._player.PlayerGui
     
-    -- Star Map button (top-right, next to Rebirth)
-    local starButton = Instance.new("TextButton")
-    starButton.Name = "StarButton"
-    starButton.Size = UDim2.new(0, 80, 0, 35)
-    starButton.Position = UDim2.new(1, -375, 0, 10) -- Next to Rebirth button
-    starButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0) -- Gold
-    starButton.Text = "⭐ Stars"
-    starButton.TextColor3 = Color3.new(1, 1, 1)
-    starButton.TextSize = 14
-    starButton.Font = Enum.Font.GothamBold
-    starButton.Parent = screenGui
+    -- Star Map button (right side, vertical layout) - ImageButton
+    local Constants = require(game:GetService("ReplicatedStorage").Shared.Constants)
+    local navConfig = Constants.UI.PLANET_UI.NAV_BUTTONS
+    local buttonIndex = 0 -- First button in vertical stack
     
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 8)
-    btnCorner.Parent = starButton
+    local starButton = Instance.new("ImageButton")
+    starButton.Name = "StarButton"
+    starButton.Size = navConfig.BUTTON_SIZE
+    starButton.Position = UDim2.new(1, -(navConfig.RIGHT_OFFSET + navConfig.BUTTON_SIZE.X.Offset), 0, navConfig.START_Y + (buttonIndex * (navConfig.BUTTON_SIZE.Y.Offset + navConfig.BUTTON_SPACING)))
+    starButton.AnchorPoint = Vector2.new(0, 0)
+    starButton.BackgroundTransparency = 1
+    starButton.Image = "rbxassetid://109076471250268"
+    starButton.ScaleType = Enum.ScaleType.Fit
+    starButton.Parent = screenGui
     
     -- Star Map panel (hidden by default)
     local mapPanel = Instance.new("Frame")

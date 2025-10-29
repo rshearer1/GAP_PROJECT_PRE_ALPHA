@@ -24,6 +24,7 @@ local TestingService = Knit.CreateService {
         BuyAllUpgrades = Knit.CreateProperty(nil),
         ForceRebirthEligibility = Knit.CreateProperty(nil),
         AddStars = Knit.CreateProperty(nil),
+        HatchRandomPet = Knit.CreateProperty(nil),
     },
 }
 
@@ -175,6 +176,30 @@ function TestingService:AddStars(player: Player, amount: number)
     return false
 end
 
+-- Hatch a random pet for testing
+function TestingService:HatchRandomPet(player: Player, petKey: string?)
+    local PetService = Knit.GetService("PetService")
+    if not PetService then
+        warn("[TestingService] PetService not found")
+        return false
+    end
+    
+    -- If no petKey provided, pick a random one
+    if not petKey then
+        local petTypes = {"space_dragon", "star_whale", "nebula_fox", "water_wisp", "flame_spirit"}
+        petKey = petTypes[math.random(1, #petTypes)]
+    end
+    
+    local success, result = PetService:HatchPet(player.UserId, petKey)
+    if success then
+        print("[TestingService] Hatched pet '" .. result.name .. "' for " .. player.Name)
+        return true, result
+    else
+        warn("[TestingService] Failed to hatch pet:", result)
+        return false, result
+    end
+end
+
 --[[ Client Methods ]]--
 
 function TestingService.Client:AddResources(player: Player, amount: number)
@@ -199,6 +224,10 @@ end
 
 function TestingService.Client:AddStars(player: Player, amount: number)
     return self.Server:AddStars(player, amount)
+end
+
+function TestingService.Client:HatchRandomPet(player: Player, petKey: string?)
+    return self.Server:HatchRandomPet(player, petKey)
 end
 
 return TestingService

@@ -66,6 +66,21 @@ function ShopController:_createShopUI()
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = self._player.PlayerGui
     
+    -- Shop toggle button (right side, vertical layout) - ImageButton
+    local Constants = require(game:GetService("ReplicatedStorage").Shared.Constants)
+    local navConfig = Constants.UI.PLANET_UI.NAV_BUTTONS
+    local buttonIndex = 2 -- Third button in vertical stack
+    
+    local shopButton = Instance.new("ImageButton")
+    shopButton.Name = "ShopButton"
+    shopButton.Size = navConfig.BUTTON_SIZE
+    shopButton.Position = UDim2.new(1, -(navConfig.RIGHT_OFFSET + navConfig.BUTTON_SIZE.X.Offset), 0, navConfig.START_Y + (buttonIndex * (navConfig.BUTTON_SIZE.Y.Offset + navConfig.BUTTON_SPACING)))
+    shopButton.AnchorPoint = Vector2.new(0, 0)
+    shopButton.BackgroundTransparency = 1
+    shopButton.Image = "rbxassetid://140353244803526"
+    shopButton.ScaleType = Enum.ScaleType.Fit
+    shopButton.Parent = screenGui
+    
     -- Shop panel (hidden by default)
     local shopPanel = Instance.new("Frame")
     shopPanel.Name = "ShopPanel"
@@ -124,6 +139,14 @@ function ShopController:_createShopUI()
     
     closeButton.MouseButton1Click:Connect(function()
         shopPanel.Visible = false
+    end)
+    
+    -- Shop button click handler
+    shopButton.MouseButton1Click:Connect(function()
+        shopPanel.Visible = not shopPanel.Visible
+        if shopPanel.Visible then
+            self:_loadGamePasses()
+        end
     end)
     
     -- Scrolling frame for game passes

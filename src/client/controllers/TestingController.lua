@@ -133,9 +133,13 @@ function TestingController:_createTestingUI()
         self:_addStars()
     end, 6)
     
-    self:_createDebugButton(buttonContainer, "🔄 Refresh All UI", function()
-        self:_refreshAllUI()
+    self:_createDebugButton(buttonContainer, "� Hatch Random Pet", function()
+        self:_hatchRandomPet()
     end, 7)
+    
+    self:_createDebugButton(buttonContainer, "�🔄 Refresh All UI", function()
+        self:_refreshAllUI()
+    end, 8)
     
     -- Update canvas size
     buttonContainer.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
@@ -259,6 +263,32 @@ function TestingController:_addStars()
         end
     end):catch(function(err)
         warn("[TestingController] ❌ Failed to add stars:", err)
+    end)
+end
+
+function TestingController:_hatchRandomPet()
+    print("[TestingController] Hatching random pet...")
+    
+    -- Get PetService
+    local PetService = Knit.GetService("PetService")
+    if not PetService then
+        warn("[TestingController] ❌ PetService not found")
+        return
+    end
+    
+    -- Random pet types
+    local petTypes = {"space_dragon", "star_whale", "star_whale", "nebula_fox", "water_wisp", "flame_spirit"}
+    local randomPet = petTypes[math.random(1, #petTypes)]
+    
+    -- Call service (Knit returns a Promise)
+    PetService:HatchPet(randomPet):andThen(function(success, pet)
+        if success and pet then
+            print("[TestingController] ✅ Hatched:", pet.name, "(" .. pet.rarity .. ")")
+        else
+            warn("[TestingController] ❌ Failed to hatch pet:", tostring(pet))
+        end
+    end):catch(function(err)
+        warn("[TestingController] ❌ Error hatching pet:", err)
     end)
 end
 

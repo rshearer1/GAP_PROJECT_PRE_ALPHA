@@ -10,16 +10,161 @@ no# Grow a Planet - Development Plan
 
 ---
 
+## 🚀 Current Status (As of October 28, 2025)
+
+### ✅ **Completed Systems** 
+**Phases 1 & 2 COMPLETE** - Core game loop fully functional!
+
+#### **Server Services (11/11 Complete):**
+1. ✅ **PlanetService** - Planet state, resources, biome evolution
+2. ✅ **PlanetVisualsService** - 3D planet spheres with rotation
+3. ✅ **UpgradeService** - 7 upgrade types with purchase system
+4. ✅ **DataService** - Auto-save every 60 seconds
+5. ✅ **SolarSystemService** - Multi-planet solar systems (3-8 planets)
+6. ✅ **RebirthService** - 90% completion prestige system
+7. ✅ **StarMapService** - 13 star upgrades, offline earnings
+8. ✅ **SpawnService** - Procedural spawn area with effects
+9. ✅ **GamePassService** - 6 premium game passes
+10. ✅ **PlotService** - Plot management system
+11. ✅ **TestingService** - Debug commands (remove before production)
+
+#### **Client Controllers (8/8 Complete):**
+1. ✅ **PlanetController** - Main planet UI (left sidebar)
+2. ✅ **UpgradeController** - Shop UI (🛒 button)
+3. ✅ **SolarSystemController** - Solar system map (🗺️ button)  
+4. ✅ **RebirthController** - Rebirth UI (🔄 button, 90% completion)
+5. ✅ **StarMapController** - Star upgrades (⭐ button)
+6. ✅ **ShopController** - Premium shop (golden NPC interaction)
+7. ✅ **PlanetViewController** - Immersive planet view (🌍 button)
+8. ✅ **TestingController** - Debug panel (T key, remove before production)
+
+### 🎯 **Current Game Features:**
+- ✅ **Multi-Planet Solar Systems** - Manage 3-8 planets per solar system
+- ✅ **Resource Generation** - 4 resources with biome-based bonuses
+- ✅ **Progression System** - Level up planets through 4 biome stages
+- ✅ **Upgrade Shop** - 7 upgrades to boost resource generation
+- ✅ **Rebirth/Prestige** - Reset progress for +10% permanent bonuses
+- ✅ **Star Map Upgrades** - 13 permanent upgrades using Stars currency
+- ✅ **Premium Shop** - 6 game passes for enhanced gameplay
+- ✅ **Planet View Mode** - Immersive camera view of your planets
+- ✅ **Visual Effects** - Professional spawn area with particles/lighting
+- ✅ **Auto-Save System** - Progress saved every 60 seconds
+
+### 🎮 **Ready for Alpha Testing!**
+The core game loop is complete and ready for player testing:
+1. **Start** → Spawn with 1 planet in a random solar system
+2. **Grow** → Collect resources, level up, evolve through biomes  
+3. **Expand** → Unlock additional planets in your solar system
+4. **Upgrade** → Purchase upgrades and star map enhancements
+5. **Prestige** → Rebirth at 90% completion for permanent bonuses
+6. **Premium** → Optional game passes for enhanced experience
+
+---
+
+## 📋 **Current Focus: Phase 3 - Pet System + UI Polish**
+
+### **Phase 3A: Pet System (Weeks 13-16)** 
+✅ **Week 13 (COMPLETE)** - Pet foundation implemented
+- ✅ PetService.lua with hatching, storage, evolution
+- ✅ PetController.lua with inventory UI
+- ✅ DataService integration for persistence
+- ✅ Testing commands in TestingController
+
+⏳ **Remaining Week 13-16 Work:**
+- [ ] Pet hatching UI (dedicated screen)
+- [ ] Pet evolution UI and confirmation dialogs
+- [ ] Pet bonus integration with resource calculations
+- [ ] Visual pet representations (3D models or sprites)
+- [ ] Pet leveling system
+
+### **Phase 3B: UI Responsive Design Refactor (NEW - Weeks 14-17)** 🆕
+**Goal:** Convert all UI to responsive scale-based design for cross-platform consistency
+
+**Why:** Current pixel-based UI causes issues on mobile, tablets, and consoles
+
+**Documents Created:**
+- ✅ `docs/DESIGN_SYSTEM.md` - Complete design system with colors, typography, standards
+- ✅ `docs/ICON_TEMPLATE_GUIDE.md` - Step-by-step icon creation guide
+- ✅ `docs/UI_REFACTOR_GUIDE.md` - Conversion templates and testing checklist
+
+**Refactoring Priority:**
+1. ⏳ **High Priority (Week 14-15):**
+   - [ ] PetController - Pet inventory panel
+   - [ ] ShopController - Shop UI
+   - [ ] Navigation Buttons - Right-side vertical stack
+   - [ ] UpgradeController - Upgrade panel
+
+2. ⏳ **Medium Priority (Week 15-16):**
+   - [ ] StarMapController - Star map view
+   - [ ] SolarSystemController - Galaxy view
+   - [ ] SettingsController - Settings panel
+   - [ ] RebirthController - Rebirth UI
+
+3. ⏳ **Low Priority (Week 16-17):**
+   - [ ] TestingController - Debug panel
+   - [ ] Polish and optimization
+
+**Key Principles:**
+- Use **Scale** instead of **Offset** for all positioning/sizing
+- Set **AnchorPoint = 0.5, 0.5** for centered elements
+- Add **UIAspectRatioConstraint** to maintain proportions
+- Add **UISizeConstraint** for min/max size limits
+- Use **TextScaled** with **UITextSizeConstraint** for responsive text
+- Test on PC, mobile, tablet, and console
+
+**Estimated Timeline:** 4 weeks
+**Target Completion:** December 9, 2025
+
+---
+
 ## Project Overview
 
 ### Vision
-Create an engaging idle/simulation game where players nurture their own planet from a barren rock to a thriving civilization, featuring pets, resources, upgrades, and social features.
+Create an engaging idle/simulation game where players nurture their own planet from a barren rock to a thriving civilization through a **two-layer gameplay structure**: active space exploration and passive planet customization.
+
+### 🌍 Two-Layer Gameplay Structure
+
+#### 1️⃣ The Space Layer (Active Gameplay)
+This is where players actively engage in combat, exploration, and resource collection.
+Think of it as the "active income" or "resource generation" area.
+
+**Core Activities:**
+- **Destroy Asteroids & Alien Outposts** - Collect Planet Essence and Biome Energy
+- **Claim Territory** - Visually expand the "bubble" where your planet can grow
+- **Discover Biome Fragments** - Find rare fragments like "Volcanic Core," "Frozen Crystal," "Ocean Pearl"
+- **Combat & Exploration** - Fight alien threats, explore new sectors, mine resources
+- **Active Resource Generation** - Earn resources through gameplay actions
+
+**Visual Feedback:**
+- Growing territory sphere around your planet
+- Expanding influence zone in space
+- Resource particle effects from destroyed asteroids
+- Visual progression as you claim more space
+
+#### 2️⃣ The Planet Layer (Customization & Progression)
+Accessed via a "View My Planet" button - takes you to a UI screen or floating camera view of your planet.
+Players use resources earned in the Space Layer to evolve and customize their planet.
+
+**Core Features:**
+- **Biome Placement** - Add unlocked biomes (e.g., place ice caps, forests, oceans)
+- **Visual Customization** - Sky color, atmosphere glow, orbiting moons, planetary rings
+- **Planet Skins** - Apply themed skins (Candy Planet, Cyber Planet, Toxic Planet, Lava World)
+- **Civilization Development** - Watch cities form, lights appear, populations grow
+- **Idle Progression** - Planet generates resources passively when you're away
+- **Biome Fragment Application** - Use discovered fragments to unlock and enhance biomes
+
+**Visual Payoff:**
+- Beautiful, rotating planet to showcase your progress
+- Share screenshots with friends
+- Unlock unique planetary features as you progress
+- Watch your world come alive with civilizations
 
 ### Core Pillars
-1. **Growth & Progression** - Clear visual feedback on planet evolution
-2. **Collection & Nurturing** - Pets and creatures that enhance gameplay
-3. **Social Interaction** - Trading, visiting, and competing with friends
-4. **Monetization** - Fair premium features that enhance but don't gate content
+1. **Two-Layer Engagement** - Active space combat + passive planet building
+2. **Growth & Progression** - Clear visual feedback on planet evolution
+3. **Collection & Discovery** - Biome fragments, pets, and rare resources
+4. **Social Interaction** - Trading, visiting, and competing with friends
+5. **Monetization** - Fair premium features that enhance but don't gate content
 
 ### Target Audience
 - Primary: Ages 10-16 (casual/idle game enthusiasts)
@@ -325,83 +470,53 @@ offlineResources = (normalRate * offlineMultiplier * cappedTime)
 ### Week 9: Solar System & Multi-Planet Expansion
 **Goal:** Expand from single planet to entire solar system
 
-#### Solar System Overview:
-Instead of managing just one planet, players unlock and manage an entire **Solar System** with multiple planets. Each solar system is randomly generated with 3-8 planets.
+#### Services Created:
+1. ✅ **SolarSystemService** (Server)
+   - ✅ Generates 3-8 random planets per solar system
+   - ✅ 8 unique planet types (Mineral World, Ocean World, Energy Core, Life Planet, etc.)
+   - ✅ Planet switching and unlocking system  
+   - ✅ Tracks active planet per player
+   - ✅ Planet unlock cost calculations (escalating resources)
+   - ✅ Handles solar system-wide bonuses and shared resources
 
-#### Core Mechanics:
-1. **Starting Planet**
-   - Players begin with 1 planet (their "Home Planet")
-   - Develop it through biomes as normal
-   
-2. **Unlocking New Planets**
-   - Unlock new planets in your solar system by:
-     - Spending resources (escalating costs)
-     - Reaching specific levels (e.g., unlock planet 2 at level 5)
-     - Completing achievements
-   - Each planet has unique characteristics:
-     - Random starting biome tendency (water-rich, mineral-rich, etc.)
-     - Different sizes (small, medium, large)
-     - Unique visual appearance (colors, patterns)
-     - Special bonuses (e.g., "Energy Planet" gives +50% energy)
+2. ✅ **SolarSystemController** (Client)
+   - ✅ Map button (🗺️) in top-right corner
+   - ✅ Solar system map UI showing all planets in orbital view
+   - ✅ Planet cards with type, level, biome, unlock status
+   - ✅ Switch/Unlock buttons per planet
+   - ✅ Visual indicators for locked/active/current planets
+   - ✅ Close button and scrollable planet grid
 
-3. **Planet Management**
-   - Switch between planets in UI
-   - Each planet has independent:
-     - Resources
-     - Level/XP
-     - Biome
-     - Upgrades (some upgrades are solar system-wide)
-   - Shared across solar system:
-     - Pets
-     - Stars (prestige currency)
-     - Some premium upgrades
-
-4. **Solar System Generation**
-   - Random number of planets (3-8) per solar system
-   - Procedurally generated planet types
-   - Orbital visualization showing all planets
-
-#### Services to Create:
-1. **SolarSystemService** (Server)
-   - Generate random solar systems
-   - Track unlocked planets per player
-   - Manage planet switching
-   - Handle solar system-wide bonuses
-   
-2. **SolarSystemController** (Client)
-   - Display solar system map/overview
-   - Planet selection UI
-   - Orbital visualization
-   - Show locked/unlocked planets
+#### Planet Types Implemented:
+1. ✅ **Home Planet** - Balanced starting planet
+2. ✅ **Mineral World** - +50% mineral generation, slower water
+3. ✅ **Ocean World** - +100% water generation, more biomass
+4. ✅ **Energy Core** - +75% energy generation, faster XP gain
+5. ✅ **Life Planet** - +100% biomass, unlocks special pets
+6. ✅ **Volcanic World** - High temperature, +100% minerals, -50% water
+7. ✅ **Ice World** - Low temperature, slow generation, +200% resource caps
+8. ✅ **Gas Giant** - Huge size, generates all resources equally
+9. ✅ **Barren Moon** - Small, fast XP gain, low resource generation
 
 #### Tasks:
-- [ ] Create solar system generation algorithm
-- [ ] Implement planet unlock system
-- [ ] Build solar system map UI (orbital view)
-- [ ] Add planet switching mechanics
-- [ ] Create unique planet types with bonuses
-- [ ] Implement solar system-wide upgrades
-- [ ] Add visual orbital paths for planets
-
-#### Planet Types (Examples):
-1. **Mineral World** - +50% mineral generation, slower water
-2. **Ocean World** - +100% water generation, more biomass
-3. **Energy Core** - +75% energy generation, faster XP gain
-4. **Life Planet** - +100% biomass, unlocks special pets
-5. **Volcanic World** - High temperature, +100% minerals, -50% water
-6. **Ice World** - Low temperature, slow generation, +200% resource caps
-7. **Gas Giant** - Huge size, generates all resources equally
-8. **Barren Moon** - Small, fast XP gain, low resource generation
+- [x] Create solar system generation algorithm ✅
+- [x] Implement planet unlock system ✅
+- [x] Build solar system map UI (orbital view) ✅
+- [x] Add planet switching mechanics ✅
+- [x] Create unique planet types with bonuses ✅
+- [x] Implement solar system-wide upgrades ✅
+- [ ] Add visual orbital paths for planets - Future enhancement
 
 #### Deliverables:
-- Solar system generation system
-- 3-8 planets per solar system (random)
-- Planet unlock progression
-- Solar system map UI
-- 8+ unique planet types
-- Planet switching functionality
+- ✅ Solar system generation system (3-8 planets per system)
+- ✅ Planet unlock progression with escalating costs
+- ✅ Solar system map UI with orbital visualization
+- ✅ 9 unique planet types with specialized bonuses
+- ✅ Planet switching functionality with live updates
+- ✅ Visual planet cards with lock/unlock states
 
 **Priority:** 🔴 Critical (Core Gameplay Loop)
+**Status:** ✅ COMPLETE (Oct 24, 2025)
 
 ---
 
@@ -628,9 +743,70 @@ Premium purchases that enhance gameplay:
 
 ---
 
-## Phase 3: Pet System (Weeks 9-12)
+### Week 12: Planet View System & UI Polish  
+**Goal:** Add immersive planet viewing mode and polish existing UI
 
-### Week 9-10: Pet Foundation
+#### Services Created:
+1. ✅ **PlanetViewController** (Client)
+   - ✅ View Planet button (🌍) in navigation area
+   - ✅ Smooth camera transitions to close-up planet view
+   - ✅ Planet info overlay with resources and level display
+   - ✅ Automatic camera rotation around planet
+   - ✅ Interactive XP collection in planet view
+   - ✅ Exit View button positioned to avoid UI overlaps
+
+#### Features Implemented:
+- ✅ **Camera Control System**
+  - Scriptable camera for planet focus mode
+  - Smooth TweenService transitions (1 second duration)
+  - Automatic orbital rotation around planet core
+  - Restore original camera position on exit
+
+- ✅ **Planet View UI**
+  - Title display ("My Planet" with player name)
+  - Comprehensive info panel showing level, biome, resources
+  - Two-column resource layout for clean display
+  - Interactive "Gain XP" button within view
+  - Exit button positioned in bottom-right (fixed overlap issue)
+
+- ✅ **Integration Features**
+  - Real-time resource updates in planet view
+  - Seamless integration with existing planet system
+  - Uses existing PlanetController for data consistency
+  - Janitor cleanup for memory management
+
+#### UI Bug Fixes:
+- ✅ **Fixed Exit View Button Overlap** (Oct 28, 2025)
+  - Repositioned from bottom-center to bottom-right
+  - Changed position from `UDim2.new(0.5, -60, 1, -60)` to `UDim2.new(1, -140, 1, -60)`
+  - Eliminated overlap with info panel's "Gain XP" button
+  - Added descriptive comments for future maintenance
+
+#### Tasks:
+- [x] Create planet view toggle system ✅
+- [x] Implement smooth camera transitions ✅
+- [x] Build planet info overlay UI ✅
+- [x] Add automatic camera rotation ✅
+- [x] Integrate with existing planet data ✅
+- [x] Fix UI element overlapping issues ✅
+- [ ] Add zoom controls - Future enhancement
+- [ ] Add particle effects in view mode - Future enhancement
+
+#### Deliverables:
+- ✅ Fully functional planet viewing mode
+- ✅ Professional UI overlay with resource display
+- ✅ Smooth camera animations and controls
+- ✅ Integration with existing game systems
+- ✅ Bug-free UI layout without overlaps
+
+**Priority:** 🟡 High (Player Engagement & Polish)
+**Status:** ✅ COMPLETE (Oct 28, 2025)
+
+---
+
+## Phase 3: Pet System (Weeks 13-16)
+
+### Week 13-14: Pet Foundation
 **Goal:** Implement pet hatching, display, and basic mechanics
 
 #### Services to Create:
@@ -696,7 +872,7 @@ interface PetData {
 
 ---
 
-### Week 11-12: Pet Evolution & Skills
+### Week 15-16: Pet Evolution & Skills
 **Goal:** Add depth to pet system through evolution
 
 #### Evolution System:
@@ -734,9 +910,70 @@ interface PetData {
 
 ---
 
-## Phase 4: Data Persistence (Weeks 13-14)
+## 🎯 **Immediate Next Steps (Week 13)**
 
-### Week 13-14: Save System
+### **Step 1: Design Pet System Architecture**
+Before implementing, we need to design the pet system structure:
+
+1. **Pet Data Structure**
+   ```lua
+   -- Create: src/shared/PetTypes.lua
+   PetData = {
+       id: string,
+       type: PetType,
+       rarity: "Common" | "Rare" | "Epic" | "Legendary" | "Mythical", 
+       level: number,
+       experience: number,
+       resourceBonus: number, -- +10% to +50%
+       specialAbility?: string
+   }
+   ```
+
+2. **Services to Create**
+   - `PetService.lua` (Server) - Handle pet creation, bonuses, evolution
+   - `PetController.lua` (Client) - Pet UI, inventory, hatching animations
+
+3. **Integration Points**
+   - Integrate with existing `PlanetService` for resource bonus calculations
+   - Add pet data to `DataService` save structure  
+   - Create pet inventory UI accessible from main navigation
+
+### **Step 2: Create Pet Foundation (This Week)**
+**Recommended approach for GAP-PRE_ALPHA-TOOLS compliance:**
+
+1. **Create Pet Service** 
+   ```bash
+   # Create new files:
+   src/server/services/PetService.lua
+   src/client/controllers/PetController.lua
+   ```
+
+2. **Design Pet Types**
+   - Start with 5 basic pet types
+   - Focus on resource generation bonuses
+   - Simple rarity system (Common, Rare, Epic)
+
+3. **Basic Pet UI**
+   - Pet inventory button in navigation area
+   - Simple grid layout for pet collection
+   - Show owned pets and their bonuses
+
+### **Step 3: Testing & Iteration**
+- Use existing `TestingController` to add pet testing commands
+- Add pets via debug panel for rapid testing
+- Verify bonus calculations work with existing systems
+
+### **Recommended Development Order:**
+1. **Day 1-2:** Create PetService.lua with basic pet creation
+2. **Day 3-4:** Build PetController.lua with simple inventory UI
+3. **Day 5-6:** Integrate pet bonuses with resource generation
+4. **Day 7:** Testing, debugging, and polish
+
+---
+
+## Phase 4: Data Persistence (Weeks 17-18)
+
+### Week 17-18: Save System
 **Goal:** Reliable data saving and loading
 
 #### Services to Create:
@@ -855,9 +1092,9 @@ interface PlanetState {
 
 ---
 
-## Phase 5: UI/UX Polish (Weeks 15-17)
+## Phase 5: UI/UX Polish (Weeks 19-21)
 
-### Week 15-16: Core UI Overhaul
+### Week 19-20: Core UI Overhaul
 **Goal:** Professional, intuitive user interface
 
 #### UI Components to Create:
@@ -906,7 +1143,215 @@ interface PlanetState {
 
 ---
 
-### Week 17: Tutorial & Onboarding
+## Phase 5.5: Space Layer - Active Gameplay (Weeks 17-20)
+
+### Week 17-18: Space Combat & Exploration
+**Goal:** Implement the active gameplay layer where players explore space and fight enemies
+
+#### Space Layer Overview:
+The Space Layer is the **active gameplay zone** where players engage in combat, exploration, and resource collection. This contrasts with the Planet Layer (passive customization). Players navigate their spaceship around their planet, expanding territory and collecting resources through gameplay actions.
+
+#### Services to Create:
+1. **SpaceExplorationService** (Server)
+   - Generate asteroid fields around planets
+   - Spawn alien outposts and enemies
+   - Handle territory claiming mechanics
+   - Track player's claimed territory radius
+   - Manage biome fragment drops
+   
+2. **SpaceCombatService** (Server)
+   - Process asteroid destruction
+   - Handle alien combat
+   - Calculate resource drops
+   - Award Planet Essence and Biome Energy
+   - Validate player actions (anti-exploit)
+
+3. **SpaceController** (Client)
+   - Ship movement and controls
+   - Combat UI and targeting
+   - Territory visualization (expanding bubble)
+   - Resource pickup effects
+   - Visual feedback for actions
+
+#### Core Mechanics:
+
+**Territory System:**
+- Each planet has a **territory radius** (starts at 100 studs)
+- Destroying asteroids/aliens **expands territory** by 1-5 studs
+- Visual bubble/sphere shows claimed territory
+- Larger territory = more asteroid spawns = more resources
+- Max territory radius: 500 studs (expandable with upgrades)
+
+**Combat & Destruction:**
+- **Asteroids**
+  - Health: 10-100 HP (scales with territory size)
+  - Drops: Minerals, Energy, Planet Essence
+  - Respawn: 5-30 seconds
+  - Types: Common, Rare, Epic (different drops)
+  
+- **Alien Outposts**
+  - Health: 50-500 HP
+  - Drops: Biome Fragments, Premium resources, Stars
+  - Respawn: 5-15 minutes
+  - Types: Scout, Fighter, Fortress
+
+**Resource Drops:**
+- **Planet Essence** - Used in Planet Layer for upgrades
+- **Biome Energy** - Used to place/upgrade biomes
+- **Biome Fragments** - Special items for unlocking biomes
+  - Volcanic Core (unlocks Lava biome)
+  - Frozen Crystal (unlocks Ice biome)
+  - Ocean Pearl (unlocks Ocean enhancements)
+  - Forest Seed (unlocks Forest enhancements)
+  - Desert Shard (unlocks Desert biome)
+
+#### Ship System:
+- Each player has a **spaceship** (starts with basic ship)
+- Ship stats: Speed, Damage, Health, Resource Capacity
+- Ship upgrades purchased with Planet Essence
+- Cosmetic ship skins (premium & earned)
+
+#### Tasks:
+- [ ] Create space environment around planets (asteroid fields)
+- [ ] Implement ship movement controls (WASD + mouse)
+- [ ] Build asteroid destruction mechanics
+- [ ] Add alien enemy AI and spawning
+- [ ] Create territory expansion system
+- [ ] Implement resource drop system
+- [ ] Add biome fragment discovery
+- [ ] Create visual effects (explosions, resource pickups)
+- [ ] Build territory visualization (expanding sphere)
+- [ ] Add combat UI (health bars, damage numbers)
+
+#### Deliverables:
+- Functional ship controls
+- Asteroid destruction mechanics
+- Territory expansion system
+- Resource drop and collection
+- Biome fragment system
+- Visual territory bubble
+- Combat feedback and effects
+
+**Priority:** 🔴 Critical (Core Gameplay Loop)
+
+---
+
+### Week 19-20: Planet Layer Integration
+**Goal:** Connect Space Layer resources to Planet Layer customization
+
+#### Planet Layer Features:
+Players access their **Planet View** via a "View My Planet" button. This is a separate camera mode or UI screen showing their planet up close with customization options.
+
+#### Services to Create/Expand:
+1. **PlanetCustomizationService** (Server)
+   - Apply biome fragments to planet
+   - Place biomes in specific regions
+   - Validate customization purchases
+   - Track applied customizations
+   - Generate civilization visuals
+
+2. **PlanetCustomizationController** (Client)
+   - Planet view camera mode
+   - Biome placement UI
+   - Visual customization panel
+   - Planet skin selection
+   - Civilization progress display
+
+#### Customization Features:
+
+**Biome Placement:**
+- Planets have 4-8 **biome slots** (expandable)
+- Drag-and-drop biomes onto planet surface
+- Each biome requires:
+  - Biome Fragment (from Space Layer)
+  - Biome Energy (from Space Layer)
+  - Planet Essence cost
+- Visual effect when placing biomes (grows from center)
+
+**Visual Customization:**
+- **Atmosphere Effects**
+  - Glow color (unlocked colors via achievements)
+  - Atmosphere density (thin, medium, thick)
+  - Cloud patterns and movement
+  
+- **Planetary Rings**
+  - Ring color and material
+  - Ring density (thin, medium, thick)
+  - Ring rotation speed
+  
+- **Orbiting Objects**
+  - Moons (1-3 moons)
+  - Space stations
+  - Asteroid belts
+  - Satellites
+
+**Planet Skins (Premium & Earned):**
+- **Themed Skins** (Override biome colors)
+  - Candy Planet (pink/pastel colors, candy textures)
+  - Cyber Planet (neon grid, digital aesthetic)
+  - Toxic Planet (green glow, hazardous look)
+  - Lava World (molten surface, ember effects)
+  - Ice World (frozen blue, aurora effects)
+  - Crystal Planet (gem-like facets, sparkles)
+  
+- **Seasonal Skins**
+  - Halloween Planet (jack-o-lanterns, spooky)
+  - Christmas Planet (snow, lights, festive)
+  - Valentine Planet (hearts, pink/red)
+
+**Civilization Development:**
+- **Population Growth** (passive, based on biome quality)
+  - Stage 1: Small settlements (campfires visible)
+  - Stage 2: Towns (buildings appear)
+  - Stage 3: Cities (lights at night, roads)
+  - Stage 4: Metropolis (sprawling cities, satellites)
+  - Stage 5: Advanced Civilization (space stations orbiting)
+
+- **Visual Indicators**
+  - Lights appear on night side of planet
+  - Roads and city grids form
+  - Satellites and ships orbit planet
+  - Communication arrays and structures
+
+#### Planet View UI:
+- **View My Planet Button** - Toggles planet view mode
+- **Camera Controls** - Rotate, zoom, pan around planet
+- **Customization Panel** - Shows available options
+- **Biome Inventory** - Displays collected fragments
+- **Preview Mode** - Preview changes before applying
+- **Save Changes** - Confirm and apply customizations
+
+#### Tasks:
+- [ ] Create planet view camera mode
+- [ ] Implement biome placement system
+- [ ] Build visual customization options
+- [ ] Add planet skin application
+- [ ] Create civilization progression visuals
+- [ ] Design customization UI panel
+- [ ] Implement biome fragment consumption
+- [ ] Add preview system for changes
+- [ ] Create smooth camera transitions
+- [ ] Add particle effects for customization
+
+#### Integration Points:
+- Space Layer resources → Planet Layer customization
+- Planet progress → Space Layer bonuses (better ship, more territory)
+- Biome quality → Civilization growth speed
+- Territory size → Available customization options
+
+#### Deliverables:
+- Planet view camera mode
+- Biome placement system
+- Visual customization tools
+- Planet skin system
+- Civilization development visuals
+- Full integration between layers
+
+**Priority:** 🔴 Critical (Core Gameplay Loop)
+
+---
+
+### Week 17: Tutorial & Onboarding (Moved to Week 21)
 **Goal:** Guide new players through core mechanics
 
 #### Tutorial Flow:

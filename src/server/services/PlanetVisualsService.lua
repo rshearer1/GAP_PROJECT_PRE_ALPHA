@@ -45,12 +45,13 @@ end
 function PlanetVisualsService:KnitStart()
     print("[PlanetVisualsService] Starting...")
     
-    -- Get PlanetService
+    -- Get PlanetService and PlotService
     self._planetService = Knit.GetService("PlanetService")
+    self._plotService = Knit.GetService("PlotService")
     
     -- Handle player joining
     Players.PlayerAdded:Connect(function(player)
-        task.wait(0.5) -- Wait for planet data to be created
+        task.wait(1) -- Wait for planet data and plot to be created
         self:_createPlanetVisual(player)
     end)
     
@@ -76,15 +77,20 @@ function PlanetVisualsService:_createPlanetVisual(player: Player)
     
     print(`[PlanetVisualsService] Creating planet for {player.Name}`)
     
-    -- Calculate position (spread players out)
-    local playerCount = #Players:GetPlayers()
-    local angle = (playerCount - 1) * (math.pi * 2 / 8) -- 8 planets in a circle
-    local radius = PLANET_SPACING
-    local position = Vector3.new(
-        math.cos(angle) * radius,
-        20, -- Height above ground
-        math.sin(angle) * radius
-    )
+    -- Get position from plot system
+    local position = Vector3.new(0, 20, 0) -- Default position
+    
+    if self._plotService then
+        local plotPosition = self._plotService:GetPlotPosition(userId)
+        if plotPosition then
+            position = plotPosition + Vector3.new(0, 20, 0) -- Planet height above plot
+            print(`[PlanetVisualsService] Using plot position for {player.Name}`)
+        else
+            warn(`[PlanetVisualsService] No plot position found for {player.Name}, using default`)
+        end
+    else
+        warn("[PlanetVisualsService] PlotService not available")
+    end
     
     -- Create planet model
     local planetModel = Instance.new("Model")
@@ -222,6 +228,25 @@ function PlanetVisualsService:UpdatePlanetVisual(userId: number, planetData: Typ
     local billboard = sphere:FindFirstChild("PlayerLabel")
     if billboard then
         billboard.StudsOffset = Vector3.new(0, planetData.size/2 + 3, 0)
+    end
+end
+
+---
+-- Update planet position (called by PlotService)
+-- @param userId number - Player's UserId
+-- @param position Vector3 - New position for the planet
+--
+function PlanetVisualsService:UpdatePlanetPosition(userId: number, position: Vector3)
+    local planetModel = self._planetModels[userId]
+    if not planetModel then
+        warn(`[PlanetVisualsService] No planet model found for user {userId}`)
+        return
+    end
+    
+    local planetCore = planetModel:FindFirstChild("PlanetCore")
+    if planetCore then
+        planetCore.Position = position
+        print(`[PlanetVisualsService] Updated planet position for user {userId}`)
     end
 end
 

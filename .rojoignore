@@ -1,0 +1,3 @@
+# Ignore nested project files in Wally packages
+Packages/_Index/**/*.project.json
+Packages/_Index/**/default.project.json

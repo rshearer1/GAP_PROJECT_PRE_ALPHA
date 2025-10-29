@@ -96,6 +96,14 @@ Constants.PETS = {
     },
 }
 
+-- Plot Settings
+Constants.PLOT = {
+    SIZE = 120,                 -- Size of each plot in studs
+    PLOTS_PER_ROW = 5,          -- Number of plots per row
+    SPACING = 20,               -- Spacing between plots
+    PLANET_HEIGHT = 20,         -- Height of planet above plot
+}
+
 -- UI Settings
 Constants.UI = {
     UPDATE_INTERVAL = 0.5,      -- Update UI every 0.5 seconds
@@ -103,7 +111,7 @@ Constants.UI = {
     
     -- Planet UI Frame Settings
     PLANET_UI = {
-        MAIN_FRAME_SIZE = UDim2.new(0, 220, 0, 280),
+        MAIN_FRAME_SIZE = UDim2.new(0, 220, 0, 270), -- Adjusted to fit nav buttons
         MAIN_FRAME_SIZE_MINIMIZED = UDim2.new(0, 220, 0, 40),
         MAIN_FRAME_POSITION = UDim2.new(0, 10, 0, 10),
         MAIN_FRAME_BG_COLOR = Color3.fromRGB(30, 30, 40),
@@ -126,10 +134,7 @@ Constants.UI = {
         RESOURCES_FRAME_SIZE = UDim2.new(1, 0, 0, 120),
         RESOURCES_FRAME_POS = UDim2.new(0, 0, 0, 70),
         
-        XP_BUTTON_SIZE = UDim2.new(1, 0, 0, 35),
-        XP_BUTTON_POS = UDim2.new(0, 0, 0, 200),
-        XP_BUTTON_COLOR = Color3.fromRGB(100, 100, 200),
-        XP_BUTTON_TEXT = "⭐ Gain XP",
+        -- Removed old XP_BUTTON settings (replaced with nav buttons)
         
         -- Resource Colors
         WATER_COLOR = Color3.fromRGB(100, 150, 255),
@@ -143,6 +148,22 @@ Constants.UI = {
         XP_TEXT_SIZE = 10,
         RESOURCE_TEXT_SIZE = 13,
         BUTTON_TEXT_SIZE = 14,
+        
+        -- Navigation Buttons (image buttons - vertical layout on right side)
+        NAV_BUTTONS = {
+            BUTTON_SIZE = UDim2.new(0, 50, 0, 50),
+            BUTTON_SPACING = 30, -- Vertical spacing between buttons (increased for no overlap)
+            RIGHT_OFFSET = 10, -- Distance from right edge
+            START_Y = 10, -- Starting Y position from top
+            
+            -- Button definitions with Roblox asset IDs
+            BUTTONS = {
+                {name = "Stars", assetId = "rbxassetid://109076471250268", tooltip = "Star Map", action = "starmap"},
+                {name = "Galaxy", assetId = "rbxassetid://90313785520046", tooltip = "Solar System", action = "solarsystem"},
+                {name = "Shop", assetId = "rbxassetid://140353244803526", tooltip = "Shop", action = "shop"},
+                {name = "Settings", assetId = "rbxassetid://80743411284468", tooltip = "Settings", action = "settings"},
+            },
+        },
     },
 }
 
