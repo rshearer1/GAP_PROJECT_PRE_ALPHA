@@ -162,15 +162,17 @@ end
 -- @private
 --
 function SpaceController:_setupControls()
-    -- F key to toggle ship
+    -- F key to toggle ship (don't check gameProcessed - we always want this to work)
     self._janitor:Add(UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        
+        -- F key to toggle ship - allow even if game processed (chat/UI won't block it)
         if input.KeyCode == Enum.KeyCode.F then
             print("[SpaceController] F key pressed - toggling ship")
             self:_toggleShip()
             return
         end
+        
+        -- For other controls, check if game processed (chat/UI active)
+        if gameProcessed then return end
         
         -- Only allow ship controls when in ship
         if not self._inShip then return end
