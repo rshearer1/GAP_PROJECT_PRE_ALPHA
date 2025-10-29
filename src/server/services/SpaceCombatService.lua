@@ -103,12 +103,16 @@ function SpaceCombatService:_spawnAsteroid()
     local sizeType = sizeTypes[math.random(1, #sizeTypes)]
     local asteroidData = Constants.SPACE_COMBAT.ASTEROID_SIZES[sizeType]
     
-    -- Random position around spawn center
+    -- Random position in a ring around black hole (between stations)
+    local blackHolePos = Constants.SPACE_ARENA.BLACK_HOLE_POSITION
+    local minRadius = Constants.SPACE_ARENA.BLACK_HOLE_SIZE + 50 -- Outside black hole
+    local maxRadius = Constants.SPACE_ARENA.ARENA_RADIUS - 100 -- Before stations
+    
     local angle = math.random() * math.pi * 2
-    local distance = Constants.SPACE_COMBAT.ASTEROID_SPAWN_RADIUS
-    local position = self._spawnCenter + Vector3.new(
+    local distance = math.random(minRadius, maxRadius)
+    local position = blackHolePos + Vector3.new(
         math.cos(angle) * distance,
-        math.random(-20, 20), -- Some vertical variation
+        math.random(-50, 50), -- Vertical variation
         math.sin(angle) * distance
     )
     

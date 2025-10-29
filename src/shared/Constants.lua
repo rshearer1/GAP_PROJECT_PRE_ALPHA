@@ -203,4 +203,24 @@ Constants.SPACE_COMBAT = {
     MAX_TERRITORY_RADIUS = 500,         -- Maximum territory size
 }
 
+-- Space Arena Settings (Black Hole + Player Stations)
+Constants.SPACE_ARENA = {
+    -- Black Hole Settings
+    BLACK_HOLE_POSITION = Vector3.new(0, 100, 0),   -- Center of arena
+    BLACK_HOLE_SIZE = 80,                            -- Diameter of black hole
+    
+    -- Player Station Settings
+    ARENA_RADIUS = 300,                  -- Distance from black hole to stations
+    MAX_PLAYER_STATIONS = 8,             -- Max players in arena
+    STATION_ZONE_RADIUS = 60,            -- Size of each player's zone
+    STATION_Y_VARIATION = 30,            -- Height variation between stations
+    
+    -- Station Upgrades
+    STARTING_STATION_SIZE = 20,          -- Initial station core size
+    MAX_STATION_MODULES = 12,            -- Max modules per station
+    
+    -- Spawn Settings
+    STATION_SPAWN_OFFSET = Vector3.new(0, 0, 30), -- Where player spawns relative to station
+}
+
 return Constants

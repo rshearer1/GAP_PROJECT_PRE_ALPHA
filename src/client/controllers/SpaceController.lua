@@ -30,21 +30,24 @@ local SpaceController = Knit.CreateController {
     -- Player's ship
     _ship = nil,
     
-    -- Movement input
-    _moveDirection = Vector3.new(0, 0, 0),
+    -- Movement - momentum based
     _currentVelocity = Vector3.new(0, 0, 0),
+    _thrustInput = Vector3.new(0, 0, 0), -- W/A/S/D thrust direction
     
-    -- Rotation
-    _targetRotation = CFrame.new(),
+    -- Camera rotation (controlled by mouse)
+    _cameraCFrame = CFrame.new(),
+    _mouseX = 0,
+    _mouseY = 0,
     
     -- Shooting
     _canShoot = true,
     _shootCooldown = Constants.SPACE_COMBAT.WEAPON_COOLDOWN,
     
-    -- Physics tuning
-    _acceleration = 3, -- How fast ship speeds up
-    _damping = 0.85, -- How much velocity persists (space drift)
-    _rotationSpeed = 5, -- How fast ship rotates to face mouse
+    -- Physics tuning (space thruster physics)
+    _thrustPower = 2.5,        -- Acceleration from thrusters
+    _dampingFactor = 0.98,     -- Momentum retention (very high for space)
+    _rotationSmooth = 0.15,    -- Camera smoothing
+    _mouseSensitivity = 0.003, -- Mouse look sensitivity
     
     -- Janitor for cleanup
     _janitor = Janitor.new(),
@@ -70,9 +73,18 @@ function SpaceController:KnitStart()
         player.CharacterAdded:Wait()
     end
     
-    -- Create simple ship
+    -- Get player's assigned station from server
+    local SpaceArenaService = Knit.GetService("SpaceArenaService")
+    local stationData = SpaceArenaService:GetMyStation():await()
+    
+    print("[SpaceController] Assigned to plot", stationData.plotNumber, "at", stationData.position)
+    
+    -- Create ship at station position
     task.wait(1) -- Wait for spawn
-    self:_createShip()
+    self:_createShip(stationData)
+    
+    -- Lock mouse to center
+    UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
     
     -- Set up controls
     self:_setupControls()
@@ -80,20 +92,29 @@ function SpaceController:KnitStart()
     -- Set up camera
     self:_setupCamera()
     
+    -- Initialize camera to look at black hole
+    local blackHolePos = SpaceArenaService:GetBlackHolePosition():await()
+    self._cameraCFrame = CFrame.lookAt(self._ship.Position, blackHolePos)
+    
     -- Start update loop
     self._janitor:Add(RunService.RenderStepped:Connect(function(deltaTime)
         self:_update(deltaTime)
     end), "Disconnect")
     
-    print("[SpaceController] Started!")
+    print("[SpaceController] Started! Controls: WASD=Thrust, Mouse=Look, Click=Shoot")
 end
 
 ---
 -- Create a simple ship for the player
+-- @param stationData table - Station data with position and orientation
 -- @private
 --
-function SpaceController:_createShip()
+function SpaceController:_createShip(stationData)
     local player = Players.LocalPlayer
+    
+    -- Calculate spawn position (offset from station position)
+    local spawnOffset = Constants.SPACE_ARENA.STATION_SPAWN_OFFSET
+    local spawnPos = stationData.position + stationData.lookAtCenter:VectorToWorldSpace(spawnOffset)
     
     -- Create ship model
     local ship = Instance.new("Part")
@@ -101,10 +122,11 @@ function SpaceController:_createShip()
     ship.Size = Vector3.new(6, 2, 8)
     ship.Color = Color3.fromRGB(100, 150, 255)
     ship.Material = Enum.Material.SmoothPlastic
-    ship.Position = Vector3.new(0, 55, 0) -- Above spawn
+    ship.Position = spawnPos
+    ship.CFrame = stationData.lookAtCenter -- Face black hole initially
     ship.Anchored = false
     ship.CanCollide = true
-    ship.CustomPhysicalProperties = PhysicalProperties.new(0.5, 0.3, 0.5, 1, 1) -- Low density, smooth
+    ship.CustomPhysicalProperties = PhysicalProperties.new(1, 0, 0, 1, 1) -- Space physics
     ship.Parent = Workspace
     
     -- Make it aerodynamic looking
@@ -137,9 +159,8 @@ function SpaceController:_createShip()
     engineGlow.Parent = ship
     
     self._ship = ship
-    self._targetRotation = ship.CFrame
     
-    print("[SpaceController] Created ship")
+    print("[SpaceController] Created ship at station plot", stationData.plotNumber)
 end
 
 ---
@@ -147,22 +168,23 @@ end
 -- @private
 --
 function SpaceController:_setupControls()
-    -- WASD movement
+    -- WASD thrust controls
     self._janitor:Add(UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         
+        -- Thrust direction (relative to camera)
         if input.KeyCode == Enum.KeyCode.W then
-            self._moveDirection = self._moveDirection + Vector3.new(0, 0, -1)
+            self._thrustInput = self._thrustInput + Vector3.new(0, 0, -1) -- Forward
         elseif input.KeyCode == Enum.KeyCode.S then
-            self._moveDirection = self._moveDirection + Vector3.new(0, 0, 1)
+            self._thrustInput = self._thrustInput + Vector3.new(0, 0, 1) -- Backward
         elseif input.KeyCode == Enum.KeyCode.A then
-            self._moveDirection = self._moveDirection + Vector3.new(-1, 0, 0)
+            self._thrustInput = self._thrustInput + Vector3.new(-1, 0, 0) -- Left
         elseif input.KeyCode == Enum.KeyCode.D then
-            self._moveDirection = self._moveDirection + Vector3.new(1, 0, 0)
+            self._thrustInput = self._thrustInput + Vector3.new(1, 0, 0) -- Right
         elseif input.KeyCode == Enum.KeyCode.Space then
-            self._moveDirection = self._moveDirection + Vector3.new(0, 1, 0)
+            self._thrustInput = self._thrustInput + Vector3.new(0, 1, 0) -- Up
         elseif input.KeyCode == Enum.KeyCode.LeftShift then
-            self._moveDirection = self._moveDirection + Vector3.new(0, -1, 0)
+            self._thrustInput = self._thrustInput + Vector3.new(0, -1, 0) -- Down
         end
         
         -- Shooting
@@ -173,17 +195,28 @@ function SpaceController:_setupControls()
     
     self._janitor:Add(UserInputService.InputEnded:Connect(function(input)
         if input.KeyCode == Enum.KeyCode.W then
-            self._moveDirection = self._moveDirection - Vector3.new(0, 0, -1)
+            self._thrustInput = self._thrustInput - Vector3.new(0, 0, -1)
         elseif input.KeyCode == Enum.KeyCode.S then
-            self._moveDirection = self._moveDirection - Vector3.new(0, 0, 1)
+            self._thrustInput = self._thrustInput - Vector3.new(0, 0, 1)
         elseif input.KeyCode == Enum.KeyCode.A then
-            self._moveDirection = self._moveDirection - Vector3.new(-1, 0, 0)
+            self._thrustInput = self._thrustInput - Vector3.new(-1, 0, 0)
         elseif input.KeyCode == Enum.KeyCode.D then
-            self._moveDirection = self._moveDirection - Vector3.new(1, 0, 0)
+            self._thrustInput = self._thrustInput - Vector3.new(1, 0, 0)
         elseif input.KeyCode == Enum.KeyCode.Space then
-            self._moveDirection = self._moveDirection - Vector3.new(0, 1, 0)
+            self._thrustInput = self._thrustInput - Vector3.new(0, 1, 0)
         elseif input.KeyCode == Enum.KeyCode.LeftShift then
-            self._moveDirection = self._moveDirection - Vector3.new(0, -1, 0)
+            self._thrustInput = self._thrustInput - Vector3.new(0, -1, 0)
+        end
+    end), "Disconnect")
+    
+    -- Mouse look (delta movement)
+    self._janitor:Add(UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            self._mouseX = self._mouseX + input.Delta.X * self._mouseSensitivity
+            self._mouseY = self._mouseY - input.Delta.Y * self._mouseSensitivity
+            
+            -- Clamp vertical rotation to prevent flipping
+            self._mouseY = math.clamp(self._mouseY, -math.pi/2 + 0.1, math.pi/2 - 0.1)
         end
     end), "Disconnect")
 end
@@ -198,7 +231,7 @@ function SpaceController:_setupCamera()
 end
 
 ---
--- Update loop
+-- Update loop - Thruster-based momentum physics
 -- @param deltaTime number - Time since last frame
 -- @private
 --
@@ -207,46 +240,49 @@ function SpaceController:_update(deltaTime)
         return
     end
     
-    -- Smooth acceleration physics
-    local moveDir = self._moveDirection.Magnitude > 0 and self._moveDirection.Unit or Vector3.new(0, 0, 0)
-    local targetVelocity = moveDir * Constants.SPACE_COMBAT.SHIP_SPEED
+    -- Update camera rotation from mouse input
+    local targetCameraCFrame = CFrame.new(self._ship.Position) 
+        * CFrame.Angles(0, self._mouseX, 0)  -- Yaw (horizontal)
+        * CFrame.Angles(self._mouseY, 0, 0)  -- Pitch (vertical)
     
-    -- Lerp to target velocity (smooth acceleration)
-    self._currentVelocity = self._currentVelocity:Lerp(targetVelocity, self._acceleration * deltaTime)
+    -- Smooth camera rotation
+    self._cameraCFrame = self._cameraCFrame:Lerp(targetCameraCFrame, self._rotationSmooth)
     
-    -- Apply damping (space drift effect when not accelerating)
-    if self._moveDirection.Magnitude == 0 then
-        self._currentVelocity = self._currentVelocity * self._damping
+    -- Apply thrust in camera's local space (W goes forward relative to where you're looking)
+    local thrustDirection = self._thrustInput.Magnitude > 0 and self._thrustInput.Unit or Vector3.new(0, 0, 0)
+    local worldThrustDirection = self._cameraCFrame:VectorToWorldSpace(thrustDirection)
+    
+    -- Apply thruster force (acceleration)
+    self._currentVelocity = self._currentVelocity + (worldThrustDirection * self._thrustPower)
+    
+    -- Apply space drag (very minimal - space has no air resistance)
+    self._currentVelocity = self._currentVelocity * self._dampingFactor
+    
+    -- Clamp max velocity
+    local maxSpeed = Constants.SPACE_COMBAT.SHIP_SPEED
+    if self._currentVelocity.Magnitude > maxSpeed then
+        self._currentVelocity = self._currentVelocity.Unit * maxSpeed
     end
     
-    -- Set ship velocity
+    -- Apply velocity to ship
     self._ship.AssemblyLinearVelocity = self._currentVelocity
     
-    -- Smooth rotation to face mouse
-    local mouse = Players.LocalPlayer:GetMouse()
-    if mouse then
-        local mousePos = mouse.Hit.Position
-        local shipPos = self._ship.Position
-        local lookVector = (mousePos - shipPos).Unit
-        local targetCFrame = CFrame.lookAt(shipPos, shipPos + lookVector)
-        
-        -- Smooth rotation
-        self._targetRotation = self._targetRotation:Lerp(targetCFrame, self._rotationSpeed * deltaTime)
-        self._ship.CFrame = self._targetRotation
+    -- Rotate ship to face movement direction (smooth)
+    if self._currentVelocity.Magnitude > 1 then
+        local targetShipCFrame = CFrame.lookAt(self._ship.Position, self._ship.Position + self._currentVelocity)
+        self._ship.CFrame = self._ship.CFrame:Lerp(targetShipCFrame, 0.1)
     end
     
-    -- Update camera - better angle and smoother
+    -- Position camera behind ship (first-person-ish view)
     local camera = Workspace.CurrentCamera
-    local cameraOffset = Vector3.new(0, 40, 40) -- Further back and higher for better view
-    local cameraPos = self._ship.Position + cameraOffset
-    local targetCFrame = CFrame.lookAt(cameraPos, self._ship.Position)
+    local cameraOffset = Vector3.new(0, 2, 8) -- Slightly above and behind
+    local cameraWorldPos = self._ship.Position + self._cameraCFrame:VectorToWorldSpace(cameraOffset)
     
-    -- Smooth camera movement
-    camera.CFrame = camera.CFrame:Lerp(targetCFrame, 5 * deltaTime)
+    camera.CFrame = CFrame.lookAt(cameraWorldPos, self._ship.Position)
 end
 
 ---
--- Shoot projectile
+-- Shoot projectile (fires in camera look direction)
 -- @private
 --
 function SpaceController:_shoot()
@@ -256,22 +292,25 @@ function SpaceController:_shoot()
     
     self._canShoot = false
     
+    -- Fire in camera's forward direction
+    local shootDirection = self._cameraCFrame.LookVector
+    
     -- Create projectile
     local projectile = Instance.new("Part")
     projectile.Name = "Projectile"
     projectile.Size = Vector3.new(0.5, 0.5, 2)
     projectile.Color = Color3.fromRGB(255, 255, 0)
     projectile.Material = Enum.Material.Neon
-    projectile.Position = self._ship.Position + (self._ship.CFrame.LookVector * 5)
-    projectile.CFrame = self._ship.CFrame
+    projectile.Position = self._ship.Position + (shootDirection * 5)
+    projectile.CFrame = CFrame.lookAt(projectile.Position, projectile.Position + shootDirection)
     projectile.Anchored = false
     projectile.CanCollide = false
     projectile.Parent = Workspace
     
-    -- Add velocity
+    -- Add velocity (inherit ship's momentum + projectile speed)
     local bodyVelocity = Instance.new("BodyVelocity")
     bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
-    bodyVelocity.Velocity = self._ship.CFrame.LookVector * Constants.SPACE_COMBAT.PROJECTILE_SPEED
+    bodyVelocity.Velocity = self._currentVelocity + (shootDirection * Constants.SPACE_COMBAT.PROJECTILE_SPEED)
     bodyVelocity.Parent = projectile
     
     -- Detect collision
