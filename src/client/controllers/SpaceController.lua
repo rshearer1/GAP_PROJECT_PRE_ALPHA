@@ -29,6 +29,8 @@ local SpaceController = Knit.CreateController {
     
     -- Player's ship
     _ship = nil,
+    _inShip = false,           -- Whether player is currently in ship
+    _stationData = nil,        -- Player's station position
     
     -- Movement - momentum based
     _currentVelocity = Vector3.new(0, 0, 0),
@@ -44,7 +46,7 @@ local SpaceController = Knit.CreateController {
     _shootCooldown = Constants.SPACE_COMBAT.WEAPON_COOLDOWN,
     
     -- Physics tuning (space thruster physics)
-    _thrustPower = 2.5,        -- Acceleration from thrusters
+    _thrustPower = 3.5,        -- Acceleration from thrusters (increased for bigger space)
     _dampingFactor = 0.98,     -- Momentum retention (very high for space)
     _rotationSmooth = 0.15,    -- Camera smoothing
     _mouseSensitivity = 0.003, -- Mouse look sensitivity
@@ -75,33 +77,25 @@ function SpaceController:KnitStart()
     
     -- Get player's assigned station from server
     local SpaceArenaService = Knit.GetService("SpaceArenaService")
-    local stationData = SpaceArenaService:GetMyStation():await()
+    self._stationData = SpaceArenaService:GetMyStation():await()
     
-    print("[SpaceController] Assigned to plot", stationData.plotNumber, "at", stationData.position)
+    print("[SpaceController] Assigned to plot", self._stationData.plotNumber, "at", self._stationData.position)
     
-    -- Create ship at station position
-    task.wait(1) -- Wait for spawn
-    self:_createShip(stationData)
+    -- DON'T auto-create ship - player must toggle it with F key
+    task.wait(1)
     
-    -- Lock mouse to center
-    UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
-    
-    -- Set up controls
+    -- Set up controls (including ship toggle)
     self:_setupControls()
     
-    -- Set up camera
+    -- Set up camera (normal third person initially)
     self:_setupCamera()
-    
-    -- Initialize camera to look at black hole
-    local blackHolePos = SpaceArenaService:GetBlackHolePosition():await()
-    self._cameraCFrame = CFrame.lookAt(self._ship.Position, blackHolePos)
     
     -- Start update loop
     self._janitor:Add(RunService.RenderStepped:Connect(function(deltaTime)
         self:_update(deltaTime)
     end), "Disconnect")
     
-    print("[SpaceController] Started! Controls: WASD=Thrust, Mouse=Look, Click=Shoot")
+    print("[SpaceController] Started! Press F to toggle ship, B for station UI")
 end
 
 ---
@@ -168,9 +162,17 @@ end
 -- @private
 --
 function SpaceController:_setupControls()
-    -- WASD thrust controls
+    -- F key to toggle ship
     self._janitor:Add(UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
+        
+        if input.KeyCode == Enum.KeyCode.F then
+            self:_toggleShip()
+            return
+        end
+        
+        -- Only allow ship controls when in ship
+        if not self._inShip then return end
         
         -- Thrust direction (relative to camera)
         if input.KeyCode == Enum.KeyCode.W then
@@ -209,8 +211,10 @@ function SpaceController:_setupControls()
         end
     end), "Disconnect")
     
-    -- Mouse look (delta movement)
+    -- Mouse look (delta movement) - only when in ship
     self._janitor:Add(UserInputService.InputChanged:Connect(function(input)
+        if not self._inShip then return end
+        
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             self._mouseX = self._mouseX + input.Delta.X * self._mouseSensitivity
             self._mouseY = self._mouseY - input.Delta.Y * self._mouseSensitivity
@@ -236,7 +240,8 @@ end
 -- @private
 --
 function SpaceController:_update(deltaTime)
-    if not self._ship or not self._ship.Parent then
+    -- Only update ship physics if in ship
+    if not self._inShip or not self._ship or not self._ship.Parent then
         return
     end
     
@@ -282,11 +287,102 @@ function SpaceController:_update(deltaTime)
 end
 
 ---
+-- Toggle ship on/off (F key)
+-- @private
+--
+function SpaceController:_toggleShip()
+    local player = Players.LocalPlayer
+    
+    if self._inShip then
+        -- Exit ship
+        print("[SpaceController] Exiting ship...")
+        
+        -- Unlock mouse
+        UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+        
+        -- Show character
+        if player.Character then
+            for _, part in ipairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Transparency = 0
+                end
+            end
+        end
+        
+        -- Reset camera to normal
+        local camera = Workspace.CurrentCamera
+        camera.CameraType = Enum.CameraType.Custom
+        camera.CameraSubject = player.Character and player.Character:FindFirstChild("Humanoid")
+        
+        -- Hide ship
+        if self._ship then
+            self._ship.Transparency = 1
+            for _, child in ipairs(self._ship:GetDescendants()) do
+                if child:IsA("BasePart") then
+                    child.Transparency = 1
+                end
+            end
+        end
+        
+        self._inShip = false
+        print("[SpaceController] Exited ship - walk around station")
+        
+    else
+        -- Enter ship
+        print("[SpaceController] Entering ship...")
+        
+        -- Create ship if it doesn't exist
+        if not self._ship then
+            self:_createShip(self._stationData)
+        end
+        
+        -- Position ship near player
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local playerPos = player.Character.HumanoidRootPart.Position
+            self._ship.Position = playerPos + Vector3.new(0, 5, 0)
+        end
+        
+        -- Lock mouse
+        UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+        
+        -- Hide character
+        if player.Character then
+            for _, part in ipairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.Transparency = 1
+                end
+            end
+        end
+        
+        -- Show ship
+        self._ship.Transparency = 0
+        for _, child in ipairs(self._ship:GetDescendants()) do
+            if child:IsA("BasePart") then
+                child.Transparency = child.Name == "EngineGlow" and 0.3 or 0
+            end
+        end
+        
+        -- Set camera to ship mode
+        local camera = Workspace.CurrentCamera
+        camera.CameraType = Enum.CameraType.Scriptable
+        
+        -- Initialize camera facing black hole
+        local SpaceArenaService = Knit.GetService("SpaceArenaService")
+        SpaceArenaService:GetBlackHolePosition():andThen(function(blackHolePos)
+            self._cameraCFrame = CFrame.lookAt(self._ship.Position, blackHolePos)
+        end)
+        
+        self._inShip = true
+        print("[SpaceController] Entered ship - WASD to fly, Mouse to aim, Click to shoot")
+    end
+end
+
+---
 -- Shoot projectile (fires in camera look direction)
 -- @private
 --
 function SpaceController:_shoot()
-    if not self._canShoot or not self._ship then
+    if not self._canShoot or not self._ship or not self._inShip then
         return
     end
     

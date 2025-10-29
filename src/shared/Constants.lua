@@ -172,8 +172,8 @@ Constants.SPACE_COMBAT = {
     -- Asteroid Settings
     ASTEROID_SPAWN_RADIUS = 200,        -- How far from spawn center to spawn asteroids
     ASTEROID_MIN_DISTANCE = 50,         -- Minimum distance from player
-    ASTEROID_MAX_COUNT = 20,            -- Max asteroids in world at once
-    ASTEROID_SPAWN_INTERVAL = 2,        -- Seconds between spawn attempts
+    ASTEROID_MAX_COUNT = 50,            -- Max asteroids in world at once (more for bigger space)
+    ASTEROID_SPAWN_INTERVAL = 1,        -- Seconds between spawn attempts (faster spawning)
     ASTEROID_SIZES = {
         SMALL = { size = 5, health = 30, resources = 10 },
         MEDIUM = { size = 10, health = 100, resources = 50 },
@@ -181,7 +181,7 @@ Constants.SPACE_COMBAT = {
     },
     
     -- Ship Settings
-    SHIP_SPEED = 35,                    -- Ship movement speed (reduced for better control)
+    SHIP_SPEED = 50,                    -- Ship movement speed (increased for bigger space)
     SHIP_ROTATION_SPEED = 2,            -- Ship rotation speed
     SHIP_MAX_HEALTH = 100,              -- Starting ship health
     SHIP_RESPAWN_TIME = 5,              -- Seconds to respawn after death
@@ -206,14 +206,14 @@ Constants.SPACE_COMBAT = {
 -- Space Arena Settings (Black Hole + Player Stations)
 Constants.SPACE_ARENA = {
     -- Black Hole Settings
-    BLACK_HOLE_POSITION = Vector3.new(0, 100, 0),   -- Center of arena
-    BLACK_HOLE_SIZE = 80,                            -- Diameter of black hole
+    BLACK_HOLE_POSITION = Vector3.new(0, 500, 0),   -- Center of arena (higher up)
+    BLACK_HOLE_SIZE = 200,                           -- Diameter of black hole (MASSIVE)
     
     -- Player Station Settings
-    ARENA_RADIUS = 300,                  -- Distance from black hole to stations
+    ARENA_RADIUS = 2000,                 -- Distance from black hole to stations (HUGE)
     MAX_PLAYER_STATIONS = 8,             -- Max players in arena
-    STATION_ZONE_RADIUS = 60,            -- Size of each player's zone
-    STATION_Y_VARIATION = 30,            -- Height variation between stations
+    STATION_ZONE_RADIUS = 150,           -- Size of each player's zone (bigger for scale)
+    STATION_Y_VARIATION = 100,           -- Height variation between stations (more dramatic)
     
     -- Station Upgrades
     STARTING_STATION_SIZE = 20,          -- Initial station core size
