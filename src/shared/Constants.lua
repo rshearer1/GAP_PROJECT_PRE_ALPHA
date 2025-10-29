@@ -181,7 +181,7 @@ Constants.SPACE_COMBAT = {
     },
     
     -- Ship Settings
-    SHIP_SPEED = 50,                    -- Ship movement speed
+    SHIP_SPEED = 35,                    -- Ship movement speed (reduced for better control)
     SHIP_ROTATION_SPEED = 2,            -- Ship rotation speed
     SHIP_MAX_HEALTH = 100,              -- Starting ship health
     SHIP_RESPAWN_TIME = 5,              -- Seconds to respawn after death
