@@ -1,0 +1,144 @@
+# 🧠 Claude Roblox Development Knowledge Pack
+
+**Purpose:**  
+This document provides a curated set of the **most useful Roblox APIs**, **community modules**, and **official documentation pages** to help you (Claude) code high-quality Roblox games.  
+Focus areas: multiplayer architecture, data persistence, UI frameworks, networking, and best practices.
+
+---
+
+## ⚙️ 1. Core Roblox APIs and Services
+
+These are the **25 most essential built-in APIs** for scripting in Roblox.  
+Each is linked to its official documentation and includes a short reason for use.
+
+| API / Service | Description |
+|----------------|--------------|
+| [DataStoreService](https://create.roblox.com/docs/reference/engine/classes/DataStoreService) | Persistent player/global data. Session saving, leaderboards, progress. |
+| [Players](https://create.roblox.com/docs/reference/engine/classes/Players) | Player lifecycle, joining/leaving, player data and properties. |
+| [ReplicatedStorage](https://create.roblox.com/docs/reference/engine/classes/ReplicatedStorage) | Shared storage for client/server modules. |
+| [RemoteEvent](https://create.roblox.com/docs/reference/engine/classes/RemoteEvent) | Event-based client↔server communication. |
+| [RemoteFunction](https://create.roblox.com/docs/reference/engine/classes/RemoteFunction) | Client↔server RPC (two-way communication). |
+| [RunService](https://create.roblox.com/docs/reference/engine/classes/RunService) | Frame/update loops, server vs. client distinction. |
+| [UserInputService](https://create.roblox.com/docs/reference/engine/classes/UserInputService) | Capture keyboard, mouse, touch, gamepad input. |
+| [TweenService](https://create.roblox.com/docs/reference/engine/classes/TweenService) | Smooth animations and UI transitions. |
+| [PathfindingService](https://create.roblox.com/docs/reference/engine/classes/PathfindingService) | AI pathfinding and navigation. |
+| [HttpService](https://create.roblox.com/docs/reference/engine/classes/HttpService) | JSON encode/decode, web requests. |
+| [MarketplaceService](https://create.roblox.com/docs/reference/engine/classes/MarketplaceService) | Gamepasses, dev products, in-game purchases. |
+| [TeleportService](https://create.roblox.com/docs/reference/engine/classes/TeleportService) | Move players between places/universes. |
+| [MessagingService](https://create.roblox.com/docs/reference/engine/classes/MessagingService) | Cross-server communication (pub/sub). |
+| [Workspace](https://create.roblox.com/docs/reference/engine/classes/Workspace) | The 3D world — physics and objects. |
+| [SoundService](https://create.roblox.com/docs/reference/engine/classes/SoundService) | Audio playback, global settings. |
+| [AnimationController / Animator](https://create.roblox.com/docs/reference/engine/classes/Animator) | Manage animation tracks. |
+| [StarterGui / GuiService](https://create.roblox.com/docs/reference/engine/classes/GuiService) | GUI creation and input handling. |
+| [Lighting](https://create.roblox.com/docs/reference/engine/classes/Lighting) | Global lighting, time of day, fog, etc. |
+| [CollectionService](https://create.roblox.com/docs/reference/engine/classes/CollectionService) | Tag objects and query by tag. |
+| [ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService) | Bind inputs to named actions. |
+| [BadgeService](https://create.roblox.com/docs/reference/engine/classes/BadgeService) | Award and manage player badges. |
+| [HttpService + Open Cloud APIs](https://create.roblox.com/docs/open-cloud) | External automation and asset uploading. |
+| [AnalyticsService / Events](https://create.roblox.com/docs) | Track player engagement (telemetry). |
+| [StarterPack / StarterPlayer](https://create.roblox.com/docs/reference/engine/classes/StarterPlayer) | Define player defaults (loadouts, scripts). |
+| [Debris Service](https://create.roblox.com/docs/reference/engine/classes/Debris) | Timed cleanup of objects (projectiles, effects). |
+
+---
+
+## 🧩 2. Community Modules and Frameworks
+
+These are widely used, **production-proven open-source modules**.  
+Claude should learn their APIs and structure to build scalable codebases.
+
+| Module / Framework | Description / Use |
+|--------------------|------------------|
+| [ProfileService](https://github.com/MadStudioRoblox/ProfileService) | Persistent DataStore wrapper with session locking & auto-save. |
+| [ProfileStore](https://devforum.roblox.com/t/profilestore-modern-datastore/2629648) | Modern replacement for DataStore2 with schema validation. |
+| [DataStore2](https://github.com/Kampfkarren/DataStore2) | Older datastore helper, simple API. |
+| [Knit](https://github.com/Sleitnick/Knit) | Lightweight MVC framework for client/server architecture. |
+| [Flamework](https://github.com/Bytebit-Studios/flamework) | Dependency injection framework (TypeScript-friendly). |
+| [Roact](https://github.com/Roblox/roact) | React-style declarative UI library. |
+| [Rodux](https://github.com/Roblox/rodux) | Redux-style state management for Roact. |
+| [Fusion](https://elttob.uk/Fusion/) | Reactive, lightweight UI library. |
+| [Maid](https://github.com/Sleitnick/Maid) / [Janitor](https://github.com/howmanysmall/Janitor) / [Trove](https://github.com/osyrisrblx/Trove) | Cleanup patterns for connections and instances. |
+| [Promise](https://github.com/LPGhatguy/roblox-lua-promise) | Asynchronous flow management. |
+| [Signal](https://github.com/Sleitnick/RbxSignal) | Lightweight event system. |
+| [TableUtil](https://github.com/Sleitnick/TableUtil) | Utility library for working with tables. |
+| [Component](https://github.com/Sleitnick/Component) | ECS-style entity management. |
+| [Input](https://github.com/Sleitnick/Input) | Input abstraction over UserInputService. |
+| [MockDataStoreService](https://github.com/buildthomas/MockDataStoreService) | Local datastore emulation for testing. |
+| [Promise-Remote](https://github.com/Sleitnick/PromiseRemote) | Promise-based RemoteEvent/Function wrapper. |
+| [RbxUtil](https://github.com/Sleitnick/RbxUtil) | Utility library collection (signals, resources, etc.). |
+| [ProfileService Forks (Modernized)](https://github.com/topics/profileservice) | Maintained versions with autosave improvements. |
+| [Pathfinding Helpers](https://devforum.roblox.com/t/tag/ai) | NPC AI wrappers around PathfindingService. |
+| [Analytics Wrappers](https://devforum.roblox.com/t/analytics-service-wrappers/1876504) | Libraries to log to external dashboards. |
+| [Networking Abstractions](https://devforum.roblox.com/t/reliable-net/1845464) | Reliable event wrappers and middleware. |
+| [UI Kits](https://create.roblox.com/marketplace/category/models?keyword=UI%20Kit) | Community UI components and templates. |
+| [Testing Libraries](https://github.com/Roblox/testez) | Unit testing for Roblox Lua (TestEZ). |
+| [Economy Helpers](https://devforum.roblox.com/t/economy-service-wrappers/1908474) | Marketplace and economy management modules. |
+| [Awesome Roblox](https://github.com/RobloxOSS/awesome-roblox) | Curated OSS list — discovery of new modules. |
+
+---
+
+## 📘 3. Must-Read Documentation & Learning Resources
+
+These are the **most valuable pages** from the official Roblox Creator Hub and DevForum.  
+They provide best practices, patterns, and examples for stable production code.
+
+| Topic | Link |
+|--------|------|
+| Roblox Creator Hub (Docs Home) | [create.roblox.com/docs](https://create.roblox.com/docs) |
+| Engine API Reference | [create.roblox.com/docs/reference/engine](https://create.roblox.com/docs/reference/engine) |
+| DataStore Best Practices | [create.roblox.com/docs/cloud/datastores](https://create.roblox.com/docs/cloud/datastores) |
+| RemoteEvent / RemoteFunction Guide | [create.roblox.com/docs/scripting/networking/remote-functions-events](https://create.roblox.com/docs/scripting/networking/remote-functions-events) |
+| Secure Networking Guide | [create.roblox.com/docs/scripting/security](https://create.roblox.com/docs/scripting/security) |
+| Open Cloud API Docs | [create.roblox.com/docs/open-cloud](https://create.roblox.com/docs/open-cloud) |
+| PathfindingService Docs | [create.roblox.com/docs/reference/engine/classes/PathfindingService](https://create.roblox.com/docs/reference/engine/classes/PathfindingService) |
+| TweenService Docs | [create.roblox.com/docs/reference/engine/classes/TweenService](https://create.roblox.com/docs/reference/engine/classes/TweenService) |
+| HttpService Docs | [create.roblox.com/docs/reference/engine/classes/HttpService](https://create.roblox.com/docs/reference/engine/classes/HttpService) |
+| MessagingService Docs | [create.roblox.com/docs/reference/engine/classes/MessagingService](https://create.roblox.com/docs/reference/engine/classes/MessagingService) |
+| MarketplaceService Docs | [create.roblox.com/docs/reference/engine/classes/MarketplaceService](https://create.roblox.com/docs/reference/engine/classes/MarketplaceService) |
+| TeleportService Docs | [create.roblox.com/docs/reference/engine/classes/TeleportService](https://create.roblox.com/docs/reference/engine/classes/TeleportService) |
+| RunService Docs | [create.roblox.com/docs/reference/engine/classes/RunService](https://create.roblox.com/docs/reference/engine/classes/RunService) |
+| ReplicatedStorage Docs | [create.roblox.com/docs/reference/engine/classes/ReplicatedStorage](https://create.roblox.com/docs/reference/engine/classes/ReplicatedStorage) |
+| UserInputService Docs | [create.roblox.com/docs/reference/engine/classes/UserInputService](https://create.roblox.com/docs/reference/engine/classes/UserInputService) |
+| Lighting Docs | [create.roblox.com/docs/reference/engine/classes/Lighting](https://create.roblox.com/docs/reference/engine/classes/Lighting) |
+| CollectionService Docs | [create.roblox.com/docs/reference/engine/classes/CollectionService](https://create.roblox.com/docs/reference/engine/classes/CollectionService) |
+| ContextActionService Docs | [create.roblox.com/docs/reference/engine/classes/ContextActionService](https://create.roblox.com/docs/reference/engine/classes/ContextActionService) |
+| BadgeService Docs | [create.roblox.com/docs/reference/engine/classes/BadgeService](https://create.roblox.com/docs/reference/engine/classes/BadgeService) |
+| StarterGui Docs | [create.roblox.com/docs/reference/engine/classes/StarterGui](https://create.roblox.com/docs/reference/engine/classes/StarterGui) |
+| ProfileService Guide | [devforum.roblox.com/t/profileservice-guide/667805](https://devforum.roblox.com/t/profileservice-guide/667805) |
+| Knit Framework Docs | [sleitnick.github.io/Knit](https://sleitnick.github.io/Knit) |
+| Fusion Docs | [elttob.uk/Fusion/docs](https://elttob.uk/Fusion/docs) |
+| TestEZ Docs | [github.com/Roblox/testez](https://github.com/Roblox/testez) |
+| Awesome Roblox List | [github.com/RobloxOSS/awesome-roblox](https://github.com/RobloxOSS/awesome-roblox) |
+
+---
+
+## 🧭 Recommended Ingestion Order for AI Coders
+
+1. **Start with Engine API Reference and Core Services**  
+   Learn syntax, class structure, and method usage from official docs.
+
+2. **Next: Networking and Data Persistence**  
+   Focus on `RemoteEvent`, `RemoteFunction`, `DataStoreService`, and `ProfileService`.
+
+3. **Then: Frameworks and UI Libraries**  
+   Learn Knit, Flamework, Roact, and Fusion to structure scalable projects.
+
+4. **Finally: Best Practices and DevForum Examples**  
+   Review networking security, error handling, and autosave patterns.
+
+---
+
+## 🧩 Extra Tips for Claude
+
+- **Prefer ProfileService over DataStore2** for reliability and session locking.  
+- Use **RemoteEvents + Validation Modules** to secure all client → server requests.  
+- For UI, start with **Fusion** (modern, reactive, lightweight).  
+- **Promise** and **Signal** modules improve async readability.  
+- Reference **RunService:IsServer() / IsClient()** to separate logic correctly.  
+- Test locally with **MockDataStoreService** and **TestEZ** before deploying.  
+- Consult the **Awesome Roblox list** when new modules are needed.
+
+---
+
+**Compiled by:** `GPT-5`  
+**Optimized for:** Claude / VSCode Agent Mode  
+**Last Updated:** October 2025

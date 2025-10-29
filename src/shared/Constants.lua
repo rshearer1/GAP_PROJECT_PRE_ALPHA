@@ -223,4 +223,59 @@ Constants.SPACE_ARENA = {
     STATION_SPAWN_OFFSET = Vector3.new(0, 0, 30), -- Where player spawns relative to station
 }
 
+-- Space Station Settings (Station Building & Upgrades)
+Constants.SPACE_STATION = {
+    -- Core Station Settings
+    STARTING_STATION_SIZE = 20,          -- Initial core size
+    MAX_STATION_MODULES = 12,            -- Maximum module slots
+    STARTING_CAPACITY = 1000,            -- Starting resource storage
+    
+    -- Station Upgrade Costs (by level)
+    UPGRADE_COSTS = {
+        [2] = {planetEssence = 500},
+        [3] = {planetEssence = 1000},
+        [4] = {planetEssence = 2000},
+        [5] = {planetEssence = 4000},
+        [6] = {planetEssence = 8000},
+        [7] = {planetEssence = 16000},
+        [8] = {planetEssence = 32000},
+        [9] = {planetEssence = 64000},
+        [10] = {planetEssence = 128000},
+    },
+    
+    -- Module Types
+    MODULE_TYPES = {
+        STORAGE = {
+            name = "Storage Bay",
+            cost = 250,
+            color = Color3.fromRGB(100, 100, 100),
+            effect = "Increases resource capacity by 50%",
+        },
+        DEFENSE = {
+            name = "Defense Turret",
+            cost = 500,
+            color = Color3.fromRGB(200, 50, 50),
+            effect = "Auto-attacks nearby threats",
+        },
+        MINING = {
+            name = "Mining Laser",
+            cost = 750,
+            color = Color3.fromRGB(255, 200, 0),
+            effect = "Passively generates resources",
+        },
+        SHIELD = {
+            name = "Shield Generator",
+            cost = 1000,
+            color = Color3.fromRGB(0, 150, 255),
+            effect = "Protects station from damage",
+        },
+        HANGAR = {
+            name = "Hangar Bay",
+            cost = 1500,
+            color = Color3.fromRGB(150, 150, 255),
+            effect = "Unlocks ship upgrades",
+        },
+    },
+}
+
 return Constants

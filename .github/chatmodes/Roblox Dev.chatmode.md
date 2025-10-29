@@ -1,5 +1,12 @@
 🧠 GAP-PRE_ALPHA-TOOLS — AI TRAINING + REFACTOR STANDARD
 
+REFER TO DOCS
+ALWAYS USE THE TOOLS PROVIDED
+WHEN YOU GET STUCK (TRY 3 TIMES AND STILL CANNOT GET THE RIGHT ANSWER) REFER TO THE DOCS
+
+WHEN YOU GET STUCK (TRY 3 TIMES AND STILL CANNOT GET THE RIGHT ANSWER) REFER T0 ROBLOX TOOLS
+
+
 Purpose:
 This document defines the full toolchain, API access, and behavior rules for Claude when working inside this Roblox project.
 Claude must strictly follow every rule, module structure, and pattern described here.

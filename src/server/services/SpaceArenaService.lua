@@ -18,6 +18,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 local Janitor = require(game:GetService("ReplicatedStorage").Packages.Janitor)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
 
 local Constants = require(ReplicatedStorage.Shared.Constants)
 
@@ -33,6 +34,9 @@ local SpaceArenaService = Knit.CreateService {
     
     -- Station positions (pre-calculated circular positions)
     _stationPositions = {},
+    
+    -- Spawn platforms for each station
+    _spawnPlatforms = {},
     
     -- Janitor for cleanup
     _janitor = Janitor.new(),
@@ -59,6 +63,9 @@ function SpaceArenaService:KnitStart()
     
     -- Create station zones (visual markers)
     self:_createStationZones()
+    
+    -- Handle player spawning
+    self:_setupPlayerSpawning()
     
     print("[SpaceArenaService] Black hole arena ready!")
 end
@@ -242,9 +249,75 @@ function SpaceArenaService:_createStationZones()
         label.TextScaled = true
         label.Font = Enum.Font.GothamBold
         label.Parent = billboard
+        
+        -- Create spawn platform at station position
+        local spawnPlatform = Instance.new("SpawnLocation")
+        spawnPlatform.Name = "StationSpawn_" .. i
+        spawnPlatform.Size = Vector3.new(20, 1, 20)
+        spawnPlatform.Position = stationData.position
+        spawnPlatform.CFrame = stationData.lookAtCenter
+        spawnPlatform.Anchored = true
+        spawnPlatform.CanCollide = true
+        spawnPlatform.Material = Enum.Material.SmoothPlastic
+        spawnPlatform.Color = Color3.fromRGB(80, 80, 100)
+        spawnPlatform.Transparency = 0
+        spawnPlatform.TopSurface = Enum.SurfaceType.Smooth
+        spawnPlatform.Enabled = false -- We'll manually assign spawns
+        spawnPlatform.Duration = 0
+        spawnPlatform.Parent = Workspace
+        
+        -- Add grid texture
+        local decal = Instance.new("Decal")
+        decal.Texture = "rbxasset://textures/SpawnLocation.png"
+        decal.Face = Enum.NormalId.Top
+        decal.Parent = spawnPlatform
+        
+        self._spawnPlatforms[i] = spawnPlatform
     end
     
     print("[SpaceArenaService] Created", #self._stationPositions, "station zones")
+end
+
+---
+-- Setup player spawning at assigned stations
+-- @private
+--
+function SpaceArenaService:_setupPlayerSpawning()
+    -- Handle new players joining
+    self._janitor:Add(Players.PlayerAdded:Connect(function(player)
+        -- Get or assign station plot
+        local stationData = self:GetPlayerStation(player.UserId)
+        
+        print("[SpaceArenaService] Player", player.Name, "assigned to plot", stationData.plotNumber)
+        
+        -- Wait for character
+        player.CharacterAdded:Connect(function(character)
+            task.wait(0.1) -- Small delay for character to load
+            
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            if humanoidRootPart and self._spawnPlatforms[stationData.plotNumber] then
+                -- Teleport player to their station spawn
+                local spawnCFrame = self._spawnPlatforms[stationData.plotNumber].CFrame * CFrame.new(0, 3, 0)
+                humanoidRootPart.CFrame = spawnCFrame
+                
+                print("[SpaceArenaService] Spawned", player.Name, "at plot", stationData.plotNumber)
+            end
+        end)
+        
+        -- Trigger spawn for existing character
+        if player.Character then
+            local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+            if humanoidRootPart and self._spawnPlatforms[stationData.plotNumber] then
+                local spawnCFrame = self._spawnPlatforms[stationData.plotNumber].CFrame * CFrame.new(0, 3, 0)
+                humanoidRootPart.CFrame = spawnCFrame
+            end
+        end
+    end), "Disconnect")
+    
+    -- Handle players leaving
+    self._janitor:Add(Players.PlayerRemoving:Connect(function(player)
+        self:ReleasePlayerStation(player.UserId)
+    end), "Disconnect")
 end
 
 ---
