@@ -167,4 +167,40 @@ Constants.UI = {
     },
 }
 
+-- Space Combat Settings
+Constants.SPACE_COMBAT = {
+    -- Asteroid Settings
+    ASTEROID_SPAWN_RADIUS = 200,        -- How far from spawn center to spawn asteroids
+    ASTEROID_MIN_DISTANCE = 50,         -- Minimum distance from player
+    ASTEROID_MAX_COUNT = 20,            -- Max asteroids in world at once
+    ASTEROID_SPAWN_INTERVAL = 2,        -- Seconds between spawn attempts
+    ASTEROID_SIZES = {
+        SMALL = { size = 5, health = 30, resources = 10 },
+        MEDIUM = { size = 10, health = 100, resources = 50 },
+        LARGE = { size = 20, health = 300, resources = 150 },
+    },
+    
+    -- Ship Settings
+    SHIP_SPEED = 50,                    -- Ship movement speed
+    SHIP_ROTATION_SPEED = 2,            -- Ship rotation speed
+    SHIP_MAX_HEALTH = 100,              -- Starting ship health
+    SHIP_RESPAWN_TIME = 5,              -- Seconds to respawn after death
+    
+    -- Weapon Settings
+    WEAPON_DAMAGE = 10,                 -- Base weapon damage
+    WEAPON_COOLDOWN = 0.5,              -- Seconds between shots
+    WEAPON_RANGE = 200,                 -- Max weapon range
+    PROJECTILE_SPEED = 100,             -- Projectile travel speed
+    
+    -- Resource Drops
+    PLANET_ESSENCE_PER_ASTEROID = 5,    -- Base essence dropped
+    BIOME_ENERGY_PER_ASTEROID = 2,      -- Base energy dropped
+    DROP_PICKUP_RADIUS = 10,            -- How close to auto-collect
+    
+    -- Territory Settings
+    STARTING_TERRITORY_RADIUS = 50,     -- Initial territory size
+    TERRITORY_EXPANSION_RATE = 1,       -- Radius increase per asteroid destroyed
+    MAX_TERRITORY_RADIUS = 500,         -- Maximum territory size
+}
+
 return Constants
