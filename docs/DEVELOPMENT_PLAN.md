@@ -61,23 +61,150 @@ The core game loop is complete and ready for player testing:
 
 ---
 
-## 📋 **Current Focus: Phase 3 - Pet System + UI Polish**
+## 📋 **Current Focus: Phase 3A - Planet Exploration & Flight System** 🚀
 
-### **Phase 3A: Pet System (Weeks 13-16)** 
+### **NEW HIGH PRIORITY: Fly to Your Planets & Explore!**
+Players will use their ships to fly to planets, land on surfaces, explore biomes, and customize their worlds!
+
+**Why This Matters:**
+This bridges the **Space Layer** (combat/flight) with the **Planet Layer** (building/customization), creating a cohesive gameplay loop where:
+- Destroy asteroids in space → Earn resources
+- Fly to your planet → Land on surface
+- Explore & customize → Build your world
+- Return to space → Continue resource gathering
+
+**Current Status (Nov 2, 2025):**
+- ✅ Space flight controls working (WASD, mouse look, F key toggle)
+- ✅ Planets visible at station positions
+- 🆕 **Next:** Implement proximity detection and landing mechanics
+
+---
+
+### **Phase 3A: Planet Exploration & Flight System (Weeks 13-17)** 🆕 **HIGH PRIORITY**
+**Goal:** Connect space flight with planet interaction - fly to planets, land, explore, and customize
+
+#### **Overview:**
+Bridge the gap between space combat and planet management by allowing players to:
+1. **Fly to their planets** using ship controls
+2. **Land on or orbit planets** for close interaction
+3. **Explore planet surfaces** in first/third person
+4. **Customize planet features** (buildings, decorations, terrain)
+
+#### **Week 13-14: Flight & Landing System**
+**Services to Create:**
+1. 🆕 **PlanetProximityService** (Server)
+   - Detect when player's ship is near their planets
+   - Handle planet landing/orbit mechanics
+   - Validate player ownership of planets
+   - Track which planet player is currently visiting
+
+2. 🆕 **PlanetLandingController** (Client)
+   - Display proximity UI when near planets ("Press E to Land")
+   - Handle landing/takeoff transitions
+   - Camera transitions (space → orbit → surface)
+   - Exit ship and walk on planet surface
+
+**Tasks:**
+- [ ] Implement proximity detection (spherical trigger zones around planets)
+- [ ] Create landing sequence (ship → orbit → surface)
+- [ ] Add "Press E to Land" prompt when near planet
+- [ ] Implement surface gravity and character controller
+- [ ] Create takeoff sequence (surface → orbit → space)
+- [ ] Add planet selection UI (if player has multiple planets)
+
+**Deliverables:**
+- Fly ship to any of your planets in the solar system
+- Land on planet surface and walk around
+- Smooth camera transitions
+- Return to space at any time
+
+#### **Week 15-16: Planet Surface Exploration**
+**Services to Create:**
+1. 🆕 **PlanetSurfaceService** (Server)
+   - Generate walkable terrain for each planet
+   - Handle biome-specific surface features
+   - Manage surface objects (buildings, decorations)
+   - Synchronize surface changes across players
+
+2. 🆕 **PlanetExplorationController** (Client)
+   - Surface navigation (WASD movement)
+   - Interaction system (click objects, place items)
+   - Resource collection on planet surface
+   - Building placement UI
+
+**Tasks:**
+- [ ] Generate terrain meshes based on planet biome
+- [ ] Create walkable surface with collision
+- [ ] Add biome-specific surface features (trees, rocks, water)
+- [ ] Implement interaction raycast system
+- [ ] Create resource nodes on surface (visual gathering)
+- [ ] Add day/night cycle on planet surface
+
+**Deliverables:**
+- Walk around planet surface in third person
+- Biome-specific terrain and decorations
+- Interactive objects on surface
+- Resource nodes for active collection
+
+#### **Week 17: Planet Customization System**
+**Services to Create:**
+1. 🆕 **PlanetCustomizationService** (Server)
+   - Store customization data (buildings, decorations, terrain edits)
+   - Validate placement (ownership, resources, space)
+   - Apply customization changes to planet visuals
+   - Unlock system for decorations/buildings
+
+2. 🆕 **PlanetCustomizationController** (Client)
+   - Customization mode UI (build menu)
+   - Placement preview (ghost models)
+   - Rotation and positioning controls
+   - Save/cancel customization changes
+
+**Customization Categories:**
+1. **Buildings** - Houses, factories, monuments (functional + decorative)
+2. **Decorations** - Trees, rocks, statues, lights
+3. **Terrain** - Raise/lower terrain, paint biomes
+4. **Atmosphere** - Sky color, cloud density, atmospheric glow
+5. **Orbital** - Add moons, rings, satellites
+
+**Tasks:**
+- [ ] Create building catalog (10-15 starter buildings)
+- [ ] Implement placement system with rotation
+- [ ] Add placement validation (terrain collision, spacing)
+- [ ] Create decoration catalog (20-30 items)
+- [ ] Implement terrain editing tools (raise/lower, smooth)
+- [ ] Add atmospheric customization sliders
+- [ ] Create unlock progression for decorations
+
+**Deliverables:**
+- Place buildings on planet surface
+- Add decorative items (trees, rocks, etc.)
+- Edit terrain height and biome paint
+- Customize planet atmosphere and visuals
+- Save customizations (persist through sessions)
+
+**Priority:** 🔴 **CRITICAL** - Core gameplay feature connecting space and planet layers
+**Estimated Timeline:** 5 weeks
+**Target Completion:** December 16, 2025
+
+---
+
+### **Phase 3B: Pet System (Weeks 18-20)** 
 ✅ **Week 13 (COMPLETE)** - Pet foundation implemented
 - ✅ PetService.lua with hatching, storage, evolution
 - ✅ PetController.lua with inventory UI
 - ✅ DataService integration for persistence
 - ✅ Testing commands in TestingController
 
-⏳ **Remaining Week 13-16 Work:**
+⏳ **Remaining Week 18-20 Work:**
 - [ ] Pet hatching UI (dedicated screen)
 - [ ] Pet evolution UI and confirmation dialogs
 - [ ] Pet bonus integration with resource calculations
 - [ ] Visual pet representations (3D models or sprites)
 - [ ] Pet leveling system
+- [ ] Pets follow player on planet surface
 
-### **Phase 3B: UI Responsive Design Refactor (NEW - Weeks 14-17)** 🆕
+### **Phase 3C: UI Responsive Design Refactor (Weeks 21-24)** 
 **Goal:** Convert all UI to responsive scale-based design for cross-platform consistency
 
 **Why:** Current pixel-based UI causes issues on mobile, tablets, and consoles
