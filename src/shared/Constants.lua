@@ -278,4 +278,34 @@ Constants.SPACE_STATION = {
     },
 }
 
+-- Planet Exploration System
+Constants.PLANET_EXPLORATION = {
+    -- Proximity & Landing
+    PROXIMITY_RADIUS = 150,           -- Distance to show landing prompt (studs)
+    LANDING_HEIGHT = 50,              -- Height above surface for landing spawn
+    TAKEOFF_HEIGHT = 100,             -- Height to spawn ship on takeoff
+    SURFACE_GRAVITY = 196.2,          -- Planet surface gravity (same as Workspace)
+    MAX_LANDING_DISTANCE = 200,       -- Max distance to initiate landing from
+    
+    -- Surface Generation
+    SURFACE_SIZE = Vector3.new(500, 10, 500), -- Base terrain platform size
+    RESOURCE_NODE_COUNT = 20,         -- Resource nodes per planet surface
+    DECORATION_DENSITY = 0.05,        -- Decorative objects per stud²
+    
+    -- Camera Transitions
+    ORBIT_TRANSITION_TIME = 3,        -- Time to zoom to orbit (seconds)
+    SURFACE_TRANSITION_TIME = 2,      -- Time to descend to surface (seconds)
+    CHARACTER_TRANSITION_TIME = 1,    -- Time to switch to character cam (seconds)
+    ORBIT_CAMERA_DISTANCE = 200,      -- Distance from planet in orbit view
+    
+    -- Controls
+    INTERACT_DISTANCE = 10,           -- Distance to interact with objects (studs)
+    PLACEMENT_GRID_SIZE = 5,          -- Snap building placement to grid (studs)
+    ROTATION_STEP = 45,               -- Q/E rotation increment (degrees)
+    
+    -- Surface Features
+    MIN_FEATURES = 10,                -- Minimum decorations per surface
+    MAX_FEATURES = 50,                -- Maximum decorations per surface
+}
+
 return Constants
